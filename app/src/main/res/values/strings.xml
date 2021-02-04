@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="text">Text</string>
+    <string name="city">City</string>
+    <string name="description">Description</string>
+
+    <string-array name="cities">
+        <item>Заметка Москва</item>
+        <item>Заметка Санкт-Петербург</item>
+        <item>Заметка Екатеринбург</item>
+        <item>Заметка Новосибирск</item>
+        <item>Заметка Самара</item>
+    </string-array>
+
+</resources>
