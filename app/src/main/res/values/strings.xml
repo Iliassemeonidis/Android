@@ -11,5 +11,9 @@
         <item>Заметка Новосибирск</item>
         <item>Заметка Самара</item>
     </string-array>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="moscow_description">Заметка про Москву</string>
+    <string name="petersburg_description">Заметки про Питер</string>
+    <string name="_07_02_2020">07.02.2020</string>
 
 </resources>

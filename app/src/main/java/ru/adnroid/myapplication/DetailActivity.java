@@ -1,26 +1,20 @@
 package ru.adnroid.myapplication;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
-public class DetailActivity extends AppCompatActivity {
+import androidx.appcompat.app.AppCompatActivity;
 
-    private TextView textView;
+import static ru.adnroid.myapplication.MainActivity.CITY_EXTRA;
+
+public class DetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        textView = findViewById(R.id.textViewCity);
+        TextView textView = findViewById(R.id.textViewCity);
+        textView.setText(getIntent().getStringExtra(CITY_EXTRA));
 
-        Intent intentCity = getIntent();
-
-        if (intentCity.hasExtra("value")) {
-            String value = intentCity.getStringExtra("value");
-            textView.setText(value);
-        }
     }
 }

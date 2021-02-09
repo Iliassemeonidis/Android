@@ -1,32 +1,31 @@
 package ru.adnroid.myapplication;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.loader.app.LoaderManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 
 public class MainActivity extends AppCompatActivity {
-    private String[] cities;
+    static final String CITY_EXTRA = "value";
+    private FragmentTransaction  transaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        cities = getResources().getStringArray(R.array.cities);
+        MoscowFragment moscowFragment = new MoscowFragment();
+        PetersburgFragment petersburgFragment = new PetersburgFragment();
+
+        /// Жесточайшая дичь
         LinearLayout layoutView = findViewById(R.id.list_container);
-
-
+        String[] cities = getResources().getStringArray(R.array.cities);
         for (int i = 0; i < cities.length; i++) {
             String city = cities[i];
             TextView tv = new TextView(this);
@@ -34,16 +33,47 @@ public class MainActivity extends AppCompatActivity {
             tv.setTextSize(30);
             layoutView.addView(tv);
             final int index = i;
-            tv.setOnClickListener(v -> {
-                //открываем новую Активити и передаем туда index
-//                    Toast.makeText(MainActivity.this, cities[index], Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getBaseContext(), DetailActivity.class);
-                String id = String.valueOf(index);
-                intent.putExtra("value", id);
-                startActivity(intent);
+            tv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    transaction = getSupportFragmentManager().beginTransaction();
+                    switch (index) {
+                        case 0:
+                            if (transaction.isAddToBackStackAllowed()) {
+                                transaction.remove(petersburgFragment);
+
+                            }
+                            transaction.add(R.id.list_container, moscowFragment);
+                            break;
+                        case 1:
+                            if (transaction.isAddToBackStackAllowed()) {
+                                transaction.remove(moscowFragment);
+                            }
+                            transaction.add(R.id.list_container, petersburgFragment);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    transaction.commitAllowingStateLoss();
+                    //открываем новую Активити и передаем туда index
+                }
             });
         }
+
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        FragmentTransaction transaction = fragmentManager.beginTransaction();
+//        transaction.add(R.id.list_container, MainFragment.newInstance("City"));
+//        transaction.commitAllowingStateLoss();
+
+
     }
 
+    public void addFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(R.id.list_container, fragment);
+        transaction.commitAllowingStateLoss();
+    }
 
 }
