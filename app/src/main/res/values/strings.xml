@@ -15,5 +15,9 @@
     <string name="moscow_description">Заметка про Москву</string>
     <string name="petersburg_description">Заметки про Питер</string>
     <string name="_07_02_2020">07.02.2020</string>
+    <string name="edit_button">Edit</string>
+    <string name="title_text">Заголовок</string>
+    <string name="description_text">Описание</string>
+    <string name="apply_button">Apply</string>
 
 </resources>
