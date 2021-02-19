@@ -58,15 +58,15 @@ public class DetailsFragment extends Fragment {
 
             FragmentActivity fragmentActivity = getActivity();
             if (fragmentActivity != null) {
-
-//                Intent intent = new Intent(fragmentActivity.getBaseContext(), EditFragment.class);
-//                intent.putExtra(EXTRA_PARAMS, noteParams);
-//                getTargetFragment().onActivityResult(getTargetRequestCode(), -1, intent);
-
                 FragmentManager fr = fragmentActivity.getSupportFragmentManager();
                 FragmentTransaction tr = fr.beginTransaction();
                 tr.replace(R.id.list_container, new EditFragment());
+                tr.addToBackStack(null);
                 tr.commitAllowingStateLoss();
+//
+//                Intent intent = new Intent(fragmentActivity.getBaseContext(), EditFragment.class);
+//                intent.putExtra(EXTRA_PARAMS, noteParams);
+//                getTargetFragment().onActivityResult(getTargetRequestCode(), -1, intent);
             }
         });
     }
