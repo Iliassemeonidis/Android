@@ -41,7 +41,7 @@ public class MainFragment extends Fragment {
             tv.setTextSize(30);
             layoutView.addView(tv);
             tv.setOnClickListener(v -> {
-                NoteParams params = new NoteParams(city, "Описание города", R.color.purple_700, new Date());
+                NoteParams params = new NoteParams(city, "Описание города", R.color.purple_700);
                 FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.list_container, DetailsFragment.newInstance(params));

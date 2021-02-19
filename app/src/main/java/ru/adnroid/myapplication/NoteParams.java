@@ -9,7 +9,6 @@ public class NoteParams implements Parcelable {
     private final String title;
     private final String description;
     private final int colour;
-    private final Date date;
 
     // Создания  ранее сериализованных данных исходно объекта
     public static final Creator<NoteParams> CREATOR = new Creator<NoteParams>() {
@@ -18,9 +17,8 @@ public class NoteParams implements Parcelable {
             String title = source.readString();
             String description = source.readString();
             int colour = source.readInt();
-            Date date = new Date();
 
-            return new NoteParams(title, description, colour, date);
+            return new NoteParams(title, description, colour);
         }
 
         @Override
@@ -30,11 +28,10 @@ public class NoteParams implements Parcelable {
     };
 
 
-    public NoteParams(String title, String description, int colour, Date date) {
+    public NoteParams(String title, String description, int colour) {
         this.title = title;
         this.description = description;
         this.colour = colour;
-        this.date = date;
     }
 
     public String getTitle() {
@@ -47,10 +44,6 @@ public class NoteParams implements Parcelable {
 
     public int getColour() {
         return colour;
-    }
-
-    public Date getDate() {
-        return date;
     }
 
 
@@ -66,6 +59,5 @@ public class NoteParams implements Parcelable {
         dest.writeString(title);
         dest.writeString(description);
         dest.writeInt(colour);
-        dest.writeString(date.toString());
     }
 }

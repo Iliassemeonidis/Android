@@ -1,21 +1,20 @@
 package ru.adnroid.myapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
-import java.util.Date;
+import androidx.fragment.app.FragmentActivity;
 
 public class EditFragment extends Fragment {
+    private static final String ARG_PARAM1 = "ARG_PARAM1";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -28,35 +27,20 @@ public class EditFragment extends Fragment {
 
         EditText editTextTitle = view.findViewById(R.id.title_edit_text);
         EditText editTextDescription = view.findViewById(R.id.description_edit_text);
+        Button buttonSave = view.findViewById(R.id.button_save);
 
-        editTextDescription.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String title = editTextTitle.getText().toString();
-                String description = editTextDescription.getText().toString();
-
-                if (!title.isEmpty() && !description.isEmpty()) {
-                    NoteParams params = new NoteParams(title, description, R.color.beige, new Date());
-                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                    FragmentTransaction transaction = fragmentManager.beginTransaction();
-                    transaction.replace(R.id.list_container, DetailsFragment.newInstance(params));
-                    transaction.addToBackStack(null);
-                    transaction.commitAllowingStateLoss();
-                } else {
-                    Toast.makeText(getContext(), "Заполните все поля", Toast.LENGTH_SHORT).show();
-                }
+        buttonSave.setOnClickListener(v -> {
+            FragmentActivity fragmentActivity = getActivity();
+            if (fragmentActivity != null) {
+               fragmentActivity.getSupportFragmentManager().popBackStack();
             }
+
         });
-
-
-
-
-
-
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-
-
-
+    }
 }
