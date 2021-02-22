@@ -2,10 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.adnroid.myapplication" >
 
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-
-    <uses-feature android:name="android.hardware.type.watch" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -23,7 +19,7 @@
         </activity>
 
         <activity
-            android:name=".FragmentActivity"
+            android:name=".ResultActivity"
             android:label="@string/title_activity_fragment" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

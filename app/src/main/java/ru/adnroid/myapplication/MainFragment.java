@@ -14,8 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import java.util.Date;
-
 
 public class MainFragment extends Fragment {
 
@@ -41,7 +39,7 @@ public class MainFragment extends Fragment {
             tv.setTextSize(30);
             layoutView.addView(tv);
             tv.setOnClickListener(v -> {
-                NoteParams params = new NoteParams(city, "Описание города", R.color.purple_700);
+                NoteBundle params = new NoteBundle(city, "Описание города", R.color.purple_700);
                 FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.list_container, DetailsFragment.newInstance(params));
