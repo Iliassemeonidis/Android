@@ -1,10 +1,12 @@
 package ru.adnroid.myapplication;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -17,13 +19,28 @@ import static ru.adnroid.myapplication.ResultActivity.EXTRA_KEY_RESULT;
 public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE = 42;
     protected static final String EXTRA_KEY = "EXTRA_KEY";
+    private static final String MAIN_FRAGMENT = "MainFragment";
+    private static final String DETAILS_FRAGMENT = "DETAILS_FRAGMENT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        addFragment(new MainFragment(), "MainFragment");
+        addFragment(new MainFragment(), R.id.list_container, MAIN_FRAGMENT);
+        checkOrientation();
+    }
+
+    private void checkOrientation() {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            initButton();
+        } else {
+            addFragment(DetailsFragment.newInstance(Notes.getInstance()), R.id.details_container, DETAILS_FRAGMENT);
+        }
+    }
+
+    private void initButton() {
         Button button = findViewById(R.id.result);
+        //FIXME check if null (зачем тут проверять на нуль, если в методе checkOrientation() мы по сути это реализовали?)
         button.setOnClickListener(v -> {
             Intent intent = new Intent(this, ResultActivity.class);
             intent.putExtra(EXTRA_KEY, "Text");
@@ -42,11 +59,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void addFragment(Fragment fragment, String tag) {
+    public void addFragment(Fragment fragment, @IdRes int container, String tag) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.findFragmentByTag(tag) == null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.add(R.id.list_container, fragment, tag);
+            transaction.add(container, fragment, tag);
             transaction.commitAllowingStateLoss();
         }
     }

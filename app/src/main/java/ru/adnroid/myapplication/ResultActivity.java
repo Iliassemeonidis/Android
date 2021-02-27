@@ -18,21 +18,22 @@ public class ResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
         EditText editText = findViewById(R.id.edit_query);
-        Button button = findViewById(R.id.button_apply);
+        initButtonApply(editText);
+    }
+
+    private void initButtonApply(EditText editText) {
+        Button apply = findViewById(R.id.button_apply);
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_KEY)) {
             String text = intent.getStringExtra(EXTRA_KEY);
             editText.setText(text);
         }
-
-        button.setOnClickListener(v -> {
+        apply.setOnClickListener(v -> {
             String text = editText.getText().toString();
             Intent result = new Intent();
             result.putExtra(EXTRA_KEY_RESULT, text);
-            setResult(Activity.RESULT_OK,result);
+            setResult(Activity.RESULT_OK, result);
             finish();
         });
-
-
     }
 }

@@ -1,6 +1,7 @@
 package ru.adnroid.myapplication;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,13 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-
 public class MainFragment extends Fragment {
-
 
     public MainFragment() {
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -30,16 +28,19 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        createList((LinearLayout) view);
+    }
+
+    private void createList(@NonNull LinearLayout view) {
         String[] cities = getResources().getStringArray(R.array.cities);
-        LinearLayout layoutView = (LinearLayout) view;
         for (String city : cities) {
             Context context = requireContext();
             TextView tv = new TextView(context);
             tv.setText(city);
             tv.setTextSize(30);
-            layoutView.addView(tv);
+            view.addView(tv);
             tv.setOnClickListener(v -> {
-                NoteBundle params = new NoteBundle(city, "Описание города", R.color.purple_700);
+                Notes params = new Notes(city, "Описание", R.color.purple_700);
                 FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.replace(R.id.list_container, DetailsFragment.newInstance(params));

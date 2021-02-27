@@ -24,17 +24,16 @@ import static ru.adnroid.myapplication.DetailsFragment.EXTRA_PARAMS;
 import static ru.adnroid.myapplication.DetailsFragment.REQUEST_CODE;
 
 public class EditFragment extends Fragment {
-    private static final String ARG_PARAM1 = "ARG_PARAM1";
+    private static final String NOTE_BUNDLE_EXTRA = "NOTE_BUNDLE_EXTRA";
     private int color;
 
-    public static EditFragment newInstance(NoteBundle param1) {
+    public static EditFragment newInstance(Notes param1) {
         EditFragment fragment = new EditFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_PARAM1, param1);
+        args.putParcelable(NOTE_BUNDLE_EXTRA, param1);
         fragment.setArguments(args);
         return fragment;
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,18 +43,19 @@ public class EditFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        String[] colors = getResources().getStringArray(R.array.colors);
-        NoteBundle noteParams = Objects.requireNonNull(getArguments()).getParcelable(ARG_PARAM1);
-        EditText editTextTitle = view.findViewById(R.id.title_edit_text);
-        editTextTitle.setText(noteParams.getTitle());
-        EditText editTextDescription = view.findViewById(R.id.description_edit_text);
-        editTextDescription.setText(noteParams.getDescription());
-        // Попросить поговорить про адаптер
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, colors);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //FIXME set color (savedInstanceState can be null)
+        initView(view);
+        initSpinner(view);
+    }
 
+    private void initSpinner(@NonNull View view/*, int spinnerPosition*/) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.colors));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner spinnerColors = view.findViewById(R.id.spinner_colors);
         spinnerColors.setAdapter(adapter);
+          /*if(spinnerPosition >=0){
+            //spinner set position
+        }*/
         spinnerColors.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -80,19 +80,29 @@ public class EditFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
+    }
 
+    private void initView(@NonNull View view) {
+        Notes noteParams = Objects.requireNonNull(getArguments()).getParcelable(NOTE_BUNDLE_EXTRA);
+        EditText editTextTitle = view.findViewById(R.id.title_edit_text);
+        EditText editTextDescription = view.findViewById(R.id.description_edit_text);
+        if (editTextTitle != null && editTextDescription != null) {
+            editTextTitle.setText(noteParams.getTitle());
+            editTextDescription.setText(noteParams.getDescription());
+        }
+        initButtonSave(view, editTextTitle, editTextDescription);
+    }
+
+    private void initButtonSave(@NonNull View view, EditText editTextTitle, EditText editTextDescription) {
         Button buttonSave = view.findViewById(R.id.button_save);
-
         buttonSave.setOnClickListener(v -> {
-            // попросить для особо одаренных еще раз пройтись по созданию фрашмента по каждоу из действий
             FragmentActivity fragmentActivity = getActivity();
             if (fragmentActivity != null) {
                 String title = editTextTitle.getText().toString();
                 String description = editTextDescription.getText().toString();
-                NoteBundle params = new NoteBundle(title, description, color);
+                Notes params = new Notes(title, description, color);
                 Intent result = new Intent();
                 result.putExtra(EXTRA_PARAMS, params);
 
@@ -103,5 +113,12 @@ public class EditFragment extends Fragment {
                 }
             }
         });
+    }
+
+    //FIXME Save color
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //Save parcelable
     }
 }
