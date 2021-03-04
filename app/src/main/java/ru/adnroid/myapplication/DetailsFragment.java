@@ -1,7 +1,9 @@
 package ru.adnroid.myapplication;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,19 +23,27 @@ import androidx.fragment.app.FragmentTransaction;
 
 import java.util.Objects;
 
+import ru.adnroid.myapplication.utils.ViewUtils;
+
 public class DetailsFragment extends Fragment {
+
     public static final int REQUEST_CODE = 42;
     public static final String EXTRA_PARAMS = "EXTRA_PARAMS";
-    private static final String ARG_PARAM1 = "ARG_PARAM1";
+    private static final String BUNDLE_EXTRA = "BUNDLE_EXTRA";
     private TextView textViewTitle;
     private TextView textViewDescription;
     private Notes notes;
     private FrameLayout frameLayout;
+    private static final String SHARED_PREF_KEY = "SHARED_PREF_KEY";
+    private static final String SHARED_PREF_TITLE = "SHARED_PREF_TITLE";
+    private static final String SHARED_PREF_DESC = "SHARED_PREF_DESC";
+    private static final String SHARED_PREF_COLOR = "SHARED_PREF_COLOR";
+    private static final String SHARED_PREF_DEFAULT_VALUE = "SHARED_PREF_DEFAULT_VALUE";
 
     public static DetailsFragment newInstance(Notes param1) {
         DetailsFragment fragment = new DetailsFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_PARAM1, param1);
+        args.putParcelable(BUNDLE_EXTRA, param1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,12 +63,18 @@ public class DetailsFragment extends Fragment {
         frameLayout = view.findViewById(R.id.root_action);
         textViewTitle = view.findViewById(R.id.title_text_view);
         textViewDescription = view.findViewById(R.id.description_text_view);
-        notes = Objects.requireNonNull(getArguments()).getParcelable(ARG_PARAM1);
-        if (textViewTitle != null && textViewDescription != null && frameLayout != null) {
+        notes = Objects.requireNonNull(getArguments()).getParcelable(BUNDLE_EXTRA);
+
+        SharedPreferences sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
+        String title = sharedPreferences.getString(SHARED_PREF_TITLE, SHARED_PREF_DEFAULT_VALUE);
+        if (title.equals(SHARED_PREF_DEFAULT_VALUE)) {
             textViewTitle.setText(notes.getTitle());
-            textViewDescription.setText(notes.getDescription());
-            frameLayout.setBackgroundColor(notes.getColour());
+        } else {
+            textViewTitle.setText(title);
         }
+
+        textViewDescription.setText(notes.getDescription());
+        frameLayout.setBackgroundColor(notes.getColour());
         initButtonEdit(view);
     }
 
@@ -71,19 +87,16 @@ public class DetailsFragment extends Fragment {
                 FragmentTransaction transaction = fragment.beginTransaction();
                 EditFragment editFragment = EditFragment.newInstance(notes);
                 editFragment.setTargetFragment(this, REQUEST_CODE);
-                checkOrientation(transaction, editFragment);
+
+                if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
+                    transaction.replace(R.id.details_container, editFragment);
+                } else {
+                    transaction.replace(R.id.list_container, editFragment);
+                }
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
             }
         });
-    }
-
-    private void checkOrientation(FragmentTransaction transaction, EditFragment editFragment) {
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            transaction.replace(R.id.list_container, editFragment);
-        } else {
-            transaction.replace(R.id.details_container, editFragment);
-        }
     }
 
     @Override
@@ -105,24 +118,32 @@ public class DetailsFragment extends Fragment {
     private void getData(@NonNull Intent data) {
         notes = data.getParcelableExtra(EXTRA_PARAMS);
         if (notes != null) {
-            initView(notes);
+            setNewNote(notes);
         } else {
             Toast.makeText(requireContext(), "No data", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void initView(Notes notes) {
-        if (textViewTitle != null && textViewDescription != null && frameLayout != null) {
-            textViewTitle.setText(notes.getTitle());
-            textViewDescription.setText(notes.getDescription());
-            frameLayout.setBackgroundColor(notes.getColour());
-            getModifiedArg(notes);
-        }
+    private void setNewNote(Notes notes) {
+        // Если в портретной ориентации перейти в EditFragment и повернуть экарн в ландшавтную ориентацию и затем нажать сохранить
+        //java.lang.NullPointerException: Attempt to invoke virtual method
+        //'void android.widget.TextView.setText(java.lang.CharSequence)' on a null object reference
+        textViewTitle.setText(notes.getTitle());
+        textViewDescription.setText(notes.getDescription());
+        frameLayout.setBackgroundColor(notes.getColour());
+
+        SharedPreferences sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SHARED_PREF_TITLE, notes.getTitle());
+        editor.putString(SHARED_PREF_DESC, notes.getDescription());
+        editor.putInt(SHARED_PREF_COLOR, notes.getColour());
+        editor.apply();
+        setModifiedArg(notes);
     }
 
-    private void getModifiedArg(Notes notes) {
+    private void setModifiedArg(Notes notes) {
         Bundle modifiedArguments = new Bundle();
-        modifiedArguments.putParcelable(ARG_PARAM1, notes);
+        modifiedArguments.putParcelable(BUNDLE_EXTRA, notes);
         setArguments(modifiedArguments);
     }
 
@@ -132,5 +153,4 @@ public class DetailsFragment extends Fragment {
         super.onSaveInstanceState(outState);
         //Save parcelable
     }
-
 }

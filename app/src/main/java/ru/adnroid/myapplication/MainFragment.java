@@ -15,7 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import ru.adnroid.myapplication.utils.ViewUtils;
+
 public class MainFragment extends Fragment {
+    private static final String DETAILS_FRAGMENT = "DETAILS_FRAGMENT";
 
     public MainFragment() {
     }
@@ -43,7 +46,12 @@ public class MainFragment extends Fragment {
                 Notes params = new Notes(city, "Описание", R.color.purple_700);
                 FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.list_container, DetailsFragment.newInstance(params));
+
+                if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
+                    transaction.replace(R.id.details_container, DetailsFragment.newInstance(params), DETAILS_FRAGMENT);
+                } else {
+                    transaction.replace(R.id.list_container, DetailsFragment.newInstance(params), DETAILS_FRAGMENT);
+                }
                 transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
             });

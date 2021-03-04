@@ -24,6 +24,7 @@ import static ru.adnroid.myapplication.DetailsFragment.EXTRA_PARAMS;
 import static ru.adnroid.myapplication.DetailsFragment.REQUEST_CODE;
 
 public class EditFragment extends Fragment {
+
     private static final String NOTE_BUNDLE_EXTRA = "NOTE_BUNDLE_EXTRA";
     private int color;
 
@@ -88,10 +89,8 @@ public class EditFragment extends Fragment {
         Notes noteParams = Objects.requireNonNull(getArguments()).getParcelable(NOTE_BUNDLE_EXTRA);
         EditText editTextTitle = view.findViewById(R.id.title_edit_text);
         EditText editTextDescription = view.findViewById(R.id.description_edit_text);
-        if (editTextTitle != null && editTextDescription != null) {
-            editTextTitle.setText(noteParams.getTitle());
-            editTextDescription.setText(noteParams.getDescription());
-        }
+        editTextTitle.setText(noteParams.getTitle());
+        editTextDescription.setText(noteParams.getDescription());
         initButtonSave(view, editTextTitle, editTextDescription);
     }
 

@@ -60,6 +60,6 @@ public class Notes implements Parcelable {
     }
 
     public static Notes getInstance() {
-        return new Notes(title, description, colour);
+        return new Notes("Москва", "Описание", R.color.purple_700);
     }
 }

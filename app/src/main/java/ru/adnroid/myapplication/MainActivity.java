@@ -15,8 +15,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import static ru.adnroid.myapplication.ResultActivity.EXTRA_KEY_RESULT;
 
-
 public class MainActivity extends AppCompatActivity {
+
     public static final int REQUEST_CODE = 42;
     protected static final String EXTRA_KEY = "EXTRA_KEY";
     private static final String MAIN_FRAGMENT = "MainFragment";
@@ -31,16 +31,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkOrientation() {
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            initButton();
-        } else {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             addFragment(DetailsFragment.newInstance(Notes.getInstance()), R.id.details_container, DETAILS_FRAGMENT);
         }
     }
 
     private void initButton() {
         Button button = findViewById(R.id.result);
-        //FIXME check if null (зачем тут проверять на нуль, если в методе checkOrientation() мы по сути это реализовали?)
         button.setOnClickListener(v -> {
             Intent intent = new Intent(this, ResultActivity.class);
             intent.putExtra(EXTRA_KEY, "Text");
