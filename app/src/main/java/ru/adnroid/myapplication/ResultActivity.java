@@ -8,10 +8,10 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import static ru.adnroid.myapplication.MainActivity.EXTRA_KEY;
+import static ru.adnroid.myapplication.main.MainActivity.EXTRA_KEY;
 
 public class ResultActivity extends AppCompatActivity {
-    protected static final String EXTRA_KEY_RESULT = "EXTRA_KEY_FRAGMENT";
+    public static final String EXTRA_KEY_RESULT = "EXTRA_KEY_FRAGMENT";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

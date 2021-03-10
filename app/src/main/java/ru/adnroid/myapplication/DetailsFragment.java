@@ -30,6 +30,7 @@ public class DetailsFragment extends Fragment {
     public static final int REQUEST_CODE = 42;
     public static final String EXTRA_PARAMS = "EXTRA_PARAMS";
     private static final String BUNDLE_EXTRA = "BUNDLE_EXTRA";
+    public static final String EDIT_FRAGMENT_TAG = "EDIT_FRAGMENT_TAG";
     private TextView textViewTitle;
     private TextView textViewDescription;
     private Notes notes;
@@ -65,14 +66,14 @@ public class DetailsFragment extends Fragment {
         textViewDescription = view.findViewById(R.id.description_text_view);
         notes = Objects.requireNonNull(getArguments()).getParcelable(BUNDLE_EXTRA);
 
-        SharedPreferences sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
-        String title = sharedPreferences.getString(SHARED_PREF_TITLE, SHARED_PREF_DEFAULT_VALUE);
-        if (title.equals(SHARED_PREF_DEFAULT_VALUE)) {
-            textViewTitle.setText(notes.getTitle());
-        } else {
-            textViewTitle.setText(title);
-        }
-
+//        SharedPreferences sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
+//        String title = sharedPreferences.getString(SHARED_PREF_TITLE, SHARED_PREF_DEFAULT_VALUE);
+//        if (title.equals(SHARED_PREF_DEFAULT_VALUE)) {
+//            textViewTitle.setText(notes.getTitle());
+//        } else {
+//            textViewTitle.setText(title);
+//        }
+        textViewTitle.setText(notes.getTitle());
         textViewDescription.setText(notes.getDescription());
         frameLayout.setBackgroundColor(notes.getColour());
         initButtonEdit(view);
@@ -89,11 +90,11 @@ public class DetailsFragment extends Fragment {
                 editFragment.setTargetFragment(this, REQUEST_CODE);
 
                 if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
-                    transaction.replace(R.id.details_container, editFragment);
+                    transaction.add(R.id.details_container, editFragment,EDIT_FRAGMENT_TAG);
                 } else {
-                    transaction.replace(R.id.list_container, editFragment);
+                    transaction.add(R.id.list_container, editFragment,EDIT_FRAGMENT_TAG);
+                    transaction.addToBackStack(null);
                 }
-                transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
             }
         });
@@ -132,12 +133,12 @@ public class DetailsFragment extends Fragment {
         textViewDescription.setText(notes.getDescription());
         frameLayout.setBackgroundColor(notes.getColour());
 
-        SharedPreferences sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SHARED_PREF_TITLE, notes.getTitle());
-        editor.putString(SHARED_PREF_DESC, notes.getDescription());
-        editor.putInt(SHARED_PREF_COLOR, notes.getColour());
-        editor.apply();
+//        SharedPreferences sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.putString(SHARED_PREF_TITLE, notes.getTitle());
+//        editor.putString(SHARED_PREF_DESC, notes.getDescription());
+//        editor.putInt(SHARED_PREF_COLOR, notes.getColour());
+//        editor.apply();
         setModifiedArg(notes);
     }
 
