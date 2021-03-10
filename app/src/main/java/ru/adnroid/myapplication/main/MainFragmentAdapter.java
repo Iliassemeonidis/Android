@@ -56,6 +56,10 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<MainFragmentAdapte
         public MainFragmentViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.list_item_text_view);
+            initClickListener(itemView);
+        }
+
+        private void initClickListener(@NonNull View itemView) {
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
                 Notes notes = getNotes()[position];
@@ -69,6 +73,7 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<MainFragmentAdapte
                 transaction.commitAllowingStateLoss();
             });
         }
+
         private void bind(String notes) {
             textView.setText(notes);
         }
