@@ -4,9 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Notes implements Parcelable {
-   private String title;
-   private static String description;
-   private static int colour;
+    private String title;
+    private String description;
+    private int colour;
 
     // Создания  ранее сериализованных данных исходно объекта
     public static final Creator<Notes> CREATOR = new Creator<Notes>() {
@@ -26,8 +26,10 @@ public class Notes implements Parcelable {
 
     public Notes(String title, String description, int colour) {
         this.title = title;
-        Notes.description = description;
-        Notes.colour = colour;
+        this.description = description;
+        this.colour = colour;
+    }
+    public Notes() {
     }
 
     public String getTitle() {
@@ -56,7 +58,8 @@ public class Notes implements Parcelable {
         dest.writeInt(colour);
     }
 
-    public static Notes getInstance() {
-        return new Notes("Москва", "Описание", R.color.purple_700);
+    public  Notes getInstance() {
+        return new Notes(title, description,colour);
     }
+
 }

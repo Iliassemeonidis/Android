@@ -18,15 +18,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import java.util.Objects;
-
 import static ru.adnroid.myapplication.DetailsFragment.EXTRA_PARAMS;
 import static ru.adnroid.myapplication.DetailsFragment.REQUEST_CODE;
 
 public class EditFragment extends Fragment {
 
     private static final String NOTE_BUNDLE_EXTRA = "NOTE_BUNDLE_EXTRA";
+    public static final String NOTE_KEY = "NOTE_KEY";
     private int color;
+    private static Bundle bundle;
+    private Notes noteParams;
 
     public static EditFragment newInstance(Notes param1) {
         EditFragment fragment = new EditFragment();
@@ -44,9 +45,24 @@ public class EditFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //FIXME set color (savedInstanceState can be null)
-        initView(view);
+        initView(view, savedInstanceState);
         initSpinner(view);
+    }
+
+    private void initView(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            noteParams = savedInstanceState.getParcelable(NOTE_KEY);
+        } else {
+            if (getArguments() != null) {
+                noteParams = getArguments().getParcelable(NOTE_BUNDLE_EXTRA);
+            }
+        }
+        EditText editTextTitle = view.findViewById(R.id.title_edit_text);
+        EditText editTextDescription = view.findViewById(R.id.description_edit_text);
+        bundle = new Bundle();
+        editTextTitle.setText(noteParams.getTitle());
+        editTextDescription.setText(noteParams.getDescription());
+        initButtonSave(view, editTextTitle, editTextDescription);
     }
 
     private void initSpinner(@NonNull View view/*, int spinnerPosition*/) {
@@ -85,15 +101,6 @@ public class EditFragment extends Fragment {
         });
     }
 
-    private void initView(@NonNull View view) {
-        Notes noteParams = Objects.requireNonNull(getArguments()).getParcelable(NOTE_BUNDLE_EXTRA);
-        EditText editTextTitle = view.findViewById(R.id.title_edit_text);
-        EditText editTextDescription = view.findViewById(R.id.description_edit_text);
-        editTextTitle.setText(noteParams.getTitle());
-        editTextDescription.setText(noteParams.getDescription());
-        initButtonSave(view, editTextTitle, editTextDescription);
-    }
-
     private void initButtonSave(@NonNull View view, EditText editTextTitle, EditText editTextDescription) {
         Button buttonSave = view.findViewById(R.id.button_save);
         buttonSave.setOnClickListener(v -> {
@@ -114,10 +121,14 @@ public class EditFragment extends Fragment {
         });
     }
 
-    //FIXME Save color
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        //Save parcelable
+        outState.putParcelable(NOTE_KEY, noteParams);
+        bundle.putParcelable(NOTE_KEY, noteParams);
+    }
+
+    public static Notes getNote() {
+        return bundle.getParcelable(NOTE_KEY);
     }
 }

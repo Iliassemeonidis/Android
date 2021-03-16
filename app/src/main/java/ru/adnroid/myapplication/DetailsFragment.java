@@ -1,9 +1,7 @@
 package ru.adnroid.myapplication;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,9 +29,11 @@ public class DetailsFragment extends Fragment {
     public static final String EXTRA_PARAMS = "EXTRA_PARAMS";
     private static final String BUNDLE_EXTRA = "BUNDLE_EXTRA";
     public static final String EDIT_FRAGMENT_TAG = "EDIT_FRAGMENT_TAG";
+    public static final String NOTE_KEY = "NOTE_KEY";
     private TextView textViewTitle;
     private TextView textViewDescription;
-    private Notes notes;
+    private Notes note;
+    private static Bundle bundleNote;
     private FrameLayout frameLayout;
     private static final String SHARED_PREF_KEY = "SHARED_PREF_KEY";
     private static final String SHARED_PREF_TITLE = "SHARED_PREF_TITLE";
@@ -57,25 +57,24 @@ public class DetailsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initView(view);
-    }
-
-    private void initView(@NonNull View view) {
         frameLayout = view.findViewById(R.id.root_action);
         textViewTitle = view.findViewById(R.id.title_text_view);
         textViewDescription = view.findViewById(R.id.description_text_view);
-        notes = Objects.requireNonNull(getArguments()).getParcelable(BUNDLE_EXTRA);
+        bundleNote = new Bundle();
+        initView(view, savedInstanceState);
+    }
 
+    private void initView(@NonNull View view, @Nullable Bundle savedInstanceState) {
 //        SharedPreferences sharedPreferences = Objects.requireNonNull(getContext()).getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
-//        String title = sharedPreferences.getString(SHARED_PREF_TITLE, SHARED_PREF_DEFAULT_VALUE);
-//        if (title.equals(SHARED_PREF_DEFAULT_VALUE)) {
-//            textViewTitle.setText(notes.getTitle());
-//        } else {
-//            textViewTitle.setText(title);
-//        }
-        textViewTitle.setText(notes.getTitle());
-        textViewDescription.setText(notes.getDescription());
-        frameLayout.setBackgroundColor(notes.getColour());
+////        String title = sharedPreferences.getString(SHARED_PREF_TITLE, SHARED_PREF_DEFAULT_VALUE);
+        if (savedInstanceState != null) {
+            note = savedInstanceState.getParcelable(NOTE_KEY);
+        } else {
+            note = Objects.requireNonNull(getArguments()).getParcelable(BUNDLE_EXTRA);
+        }
+        textViewTitle.setText(note.getTitle());
+        textViewDescription.setText(note.getDescription());
+        frameLayout.setBackgroundColor(note.getColour());
         initButtonEdit(view);
     }
 
@@ -86,15 +85,14 @@ public class DetailsFragment extends Fragment {
             if (context != null) {
                 FragmentManager fragment = context.getSupportFragmentManager();
                 FragmentTransaction transaction = fragment.beginTransaction();
-                EditFragment editFragment = EditFragment.newInstance(notes);
+                EditFragment editFragment = EditFragment.newInstance(note);
                 editFragment.setTargetFragment(this, REQUEST_CODE);
-
                 if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
-                    transaction.add(R.id.details_container, editFragment,EDIT_FRAGMENT_TAG);
+                    transaction.add(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
                 } else {
-                    transaction.add(R.id.list_container, editFragment,EDIT_FRAGMENT_TAG);
-                    transaction.addToBackStack(null);
+                    transaction.replace(R.id.list_container, editFragment, EDIT_FRAGMENT_TAG);
                 }
+                transaction.addToBackStack(null);
                 transaction.commitAllowingStateLoss();
             }
         });
@@ -117,9 +115,9 @@ public class DetailsFragment extends Fragment {
     }
 
     private void getData(@NonNull Intent data) {
-        notes = data.getParcelableExtra(EXTRA_PARAMS);
-        if (notes != null) {
-            setNewNote(notes);
+        note = data.getParcelableExtra(EXTRA_PARAMS);
+        if (note != null) {
+            setNewNote(note);
         } else {
             Toast.makeText(requireContext(), "No data", Toast.LENGTH_SHORT).show();
         }
@@ -146,12 +144,21 @@ public class DetailsFragment extends Fragment {
         Bundle modifiedArguments = new Bundle();
         modifiedArguments.putParcelable(BUNDLE_EXTRA, notes);
         setArguments(modifiedArguments);
+        this.note = notes;
     }
 
-    //FIXME Save color
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        //Save parcelable
+        outState.putParcelable(NOTE_KEY, note);
+        bundleNote.putParcelable(NOTE_KEY, note);
+    }
+
+    public static Notes getNote() {
+        if (bundleNote != null) {
+            return bundleNote.getParcelable(NOTE_KEY);
+        } else {
+            return new Notes("Новая заметка", "Описание", R.color.purple_700);
+        }
     }
 }

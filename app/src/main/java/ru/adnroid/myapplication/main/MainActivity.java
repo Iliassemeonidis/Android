@@ -3,14 +3,19 @@ package ru.adnroid.myapplication.main;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import java.util.ArrayList;
 
 import ru.adnroid.myapplication.DetailsFragment;
 import ru.adnroid.myapplication.EditFragment;
@@ -20,6 +25,7 @@ import ru.adnroid.myapplication.ResultActivity;
 
 import static ru.adnroid.myapplication.DetailsFragment.EDIT_FRAGMENT_TAG;
 import static ru.adnroid.myapplication.ResultActivity.EXTRA_KEY_RESULT;
+import static ru.adnroid.myapplication.main.MainFragment.LIST;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,12 +35,21 @@ public class MainActivity extends AppCompatActivity {
     private static final String DETAILS_FRAGMENT_TAG = "DETAILS_FRAGMENT_TAG";
     private static final String DEFAULT_TAG = "DEFAULT_TAG";
 
+    private ArrayList<Notes> notes;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        addMainFragment();
+        addMainFragment(savedInstanceState);
         addFragment();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
     }
 
     private void initButton() {
@@ -57,10 +72,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void addMainFragment() {
+    public void addMainFragment(Bundle savedInstanceState) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.list_container, new MainFragment(), MAIN_FRAGMENT_TAG);
+        if (savedInstanceState != null) {
+            notes = savedInstanceState.getParcelableArrayList(LIST);
+            transaction.replace(R.id.list_container, MainFragment.newInstance(notes), MAIN_FRAGMENT_TAG);
+        } else {
+            transaction.replace(R.id.list_container, new MainFragment(), MAIN_FRAGMENT_TAG);
+        }
         transaction.commitAllowingStateLoss();
     }
 
@@ -69,14 +89,18 @@ public class MainActivity extends AppCompatActivity {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             Fragment fragment = fragmentManager.findFragmentById(R.id.list_container);
+            Notes note;
             if (getFragmentsTag(fragment).equals(MAIN_FRAGMENT_TAG) || getFragmentsTag(fragment).equals(DETAILS_FRAGMENT_TAG)) {
-                transaction.replace(R.id.details_container, DetailsFragment.newInstance(Notes.getInstance()), DETAILS_FRAGMENT_TAG);
-                removeFragment(transaction, fragment);
+                note = DetailsFragment.getNote();
+                transaction.replace(R.id.details_container, DetailsFragment.newInstance(note), DETAILS_FRAGMENT_TAG);
+//                removeFragment(transaction, fragment);
             } else if (getFragmentsTag(fragment).equals(EDIT_FRAGMENT_TAG)) {
-                transaction.add(R.id.details_container, EditFragment.newInstance(Notes.getInstance()), EDIT_FRAGMENT_TAG);
+                note = EditFragment.getNote();
+                transaction.add(R.id.details_container, EditFragment.newInstance(note), EDIT_FRAGMENT_TAG);
                 removeFragment(transaction, fragment);
             } else {
-                transaction.replace(R.id.details_container, DetailsFragment.newInstance(Notes.getInstance()), DETAILS_FRAGMENT_TAG);
+                note = DetailsFragment.getNote();
+                transaction.add(R.id.details_container, DetailsFragment.newInstance(note), DETAILS_FRAGMENT_TAG);
             }
             transaction.commitAllowingStateLoss();
         }
@@ -90,10 +114,16 @@ public class MainActivity extends AppCompatActivity {
 
     private String getFragmentsTag(Fragment fragment) {
         if (fragment != null) {
-           return fragment.getTag();
+            return fragment.getTag();
         }
         return DEFAULT_TAG;
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        notes = MainFragment.getNote();
+        outState.putParcelableArrayList(LIST, notes);
+    }
 }
 

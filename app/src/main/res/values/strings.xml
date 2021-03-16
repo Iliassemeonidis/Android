@@ -38,5 +38,7 @@
     <string name="apply">Apply</string>
     <string name="result">Result</string>
     <string name="settings">Settings</string>
+    <string name="add">add</string>
+    <string name="clear">clear</string>
 
 </resources>
