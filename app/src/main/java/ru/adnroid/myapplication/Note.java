@@ -3,7 +3,7 @@ package ru.adnroid.myapplication;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Notes implements Parcelable {
+public class Note implements Parcelable {
     private int type;
     private String date;
     private String title;
@@ -11,28 +11,32 @@ public class Notes implements Parcelable {
     private int colour;
 
     // Создания  ранее сериализованных данных исходно объекта
-    public static final Creator<Notes> CREATOR = new Creator<Notes>() {
+    public static final Creator<Note> CREATOR = new Creator<Note>() {
         @Override
-        public Notes createFromParcel(Parcel source) {
+        public Note createFromParcel(Parcel source) {
             String title = source.readString();
             String description = source.readString();
             int colour = source.readInt();
-            return new Notes(title, description, colour);
+            return new Note(title, description, colour);
         }
 
         @Override
-        public Notes[] newArray(int size) {
-            return new Notes[size];
+        public Note[] newArray(int size) {
+            return new Note[size];
         }
     };
 
-    public Notes(String title, String description, int colour) {
+    public Note(String title, String description, int colour) {
         this.title = title;
         this.description = description;
         this.colour = colour;
     }
 
-    public Notes() {
+    public Note(int type) {
+        this.type = type;
+    }
+
+    public Note() {
     }
 
     public String getTitle() {
@@ -77,8 +81,8 @@ public class Notes implements Parcelable {
         dest.writeInt(colour);
     }
 
-    public Notes getInstance() {
-        return new Notes(title, description, colour);
+    public Note getInstance() {
+        return new Note(title, description, colour);
     }
 
 }

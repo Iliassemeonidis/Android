@@ -20,4 +20,19 @@
         android:textColor="@color/black"
         android:textSize="@dimen/list_item_text_size"
         tools:text="Заметка Москва" />
+
+    <ImageView
+        android:id="@+id/add_item"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center_vertical"
+        app:srcCompat="@drawable/ic_plus" />
+
+    <ImageView
+        android:id="@+id/remove_item"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/margin"
+        app:srcCompat="@drawable/ic_close" />
 </LinearLayout>

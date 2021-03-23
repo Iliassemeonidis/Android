@@ -27,9 +27,9 @@ public class EditFragment extends Fragment {
     public static final String NOTE_KEY = "NOTE_KEY";
     private int color;
     private static Bundle bundle;
-    private Notes noteParams;
+    private Note noteParams;
 
-    public static EditFragment newInstance(Notes param1) {
+    public static EditFragment newInstance(Note param1) {
         EditFragment fragment = new EditFragment();
         Bundle args = new Bundle();
         args.putParcelable(NOTE_BUNDLE_EXTRA, param1);
@@ -55,7 +55,7 @@ public class EditFragment extends Fragment {
         } else if (getArguments() != null) {
             noteParams = getArguments().getParcelable(NOTE_BUNDLE_EXTRA);
         } else {
-            noteParams = new Notes("", "", 0);
+            noteParams = new Note("", "", 0);
         }
         EditText editTextTitle = view.findViewById(R.id.title_edit_text);
         EditText editTextDescription = view.findViewById(R.id.description_edit_text);
@@ -108,7 +108,7 @@ public class EditFragment extends Fragment {
             if (fragmentActivity != null) {
                 String title = editTextTitle.getText().toString();
                 String description = editTextDescription.getText().toString();
-                Notes params = new Notes(title, description, color);
+                Note params = new Note(title, description, color);
                 Intent result = new Intent();
                 result.putExtra(EXTRA_PARAMS, params);
 
@@ -128,7 +128,7 @@ public class EditFragment extends Fragment {
         bundle.putParcelable(NOTE_KEY, noteParams);
     }
 
-    public static Notes getNote() {
+    public static Note getNote() {
         return bundle.getParcelable(NOTE_KEY);
     }
 }

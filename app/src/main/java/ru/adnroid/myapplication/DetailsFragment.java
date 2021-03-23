@@ -32,7 +32,7 @@ public class DetailsFragment extends Fragment {
     public static final String NOTE_KEY = "NOTE_KEY";
     private TextView textViewTitle;
     private TextView textViewDescription;
-    private Notes note;
+    private Note note;
     private static Bundle bundleNote;
     private FrameLayout frameLayout;
     private static final String SHARED_PREF_KEY = "SHARED_PREF_KEY";
@@ -41,7 +41,7 @@ public class DetailsFragment extends Fragment {
     private static final String SHARED_PREF_COLOR = "SHARED_PREF_COLOR";
     private static final String SHARED_PREF_DEFAULT_VALUE = "SHARED_PREF_DEFAULT_VALUE";
 
-    public static DetailsFragment newInstance(Notes param1) {
+    public static DetailsFragment newInstance(Note param1) {
         DetailsFragment fragment = new DetailsFragment();
         Bundle args = new Bundle();
         args.putParcelable(BUNDLE_EXTRA, param1);
@@ -123,7 +123,7 @@ public class DetailsFragment extends Fragment {
         }
     }
 
-    private void setNewNote(Notes notes) {
+    private void setNewNote(Note notes) {
         // Если в портретной ориентации перейти в EditFragment и повернуть экарн в ландшавтную ориентацию и затем нажать сохранить
         //java.lang.NullPointerException: Attempt to invoke virtual method
         //'void android.widget.TextView.setText(java.lang.CharSequence)' on a null object reference
@@ -140,7 +140,7 @@ public class DetailsFragment extends Fragment {
         setModifiedArg(notes);
     }
 
-    private void setModifiedArg(Notes notes) {
+    private void setModifiedArg(Note notes) {
         Bundle modifiedArguments = new Bundle();
         modifiedArguments.putParcelable(BUNDLE_EXTRA, notes);
         setArguments(modifiedArguments);
@@ -154,11 +154,11 @@ public class DetailsFragment extends Fragment {
         bundleNote.putParcelable(NOTE_KEY, note);
     }
 
-    public static Notes getNote() {
+    public static Note getNote() {
         if (bundleNote != null) {
             return bundleNote.getParcelable(NOTE_KEY);
         } else {
-            return new Notes("Новая заметка", "Описание", R.color.purple_700);
+            return new Note("Новая заметка", "Описание", R.color.purple_700);
         }
     }
 }

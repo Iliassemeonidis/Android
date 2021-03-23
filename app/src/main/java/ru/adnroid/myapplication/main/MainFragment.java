@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,10 +17,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 
 import ru.adnroid.myapplication.EditFragment;
-import ru.adnroid.myapplication.Notes;
+import ru.adnroid.myapplication.Note;
 import ru.adnroid.myapplication.R;
 import ru.adnroid.myapplication.utils.ViewUtils;
 
@@ -36,11 +37,11 @@ public class MainFragment extends Fragment {
     public static final String LIST = "LIST";
     private static Bundle bundle;
     private MainFragmentAdapter adapter;
-    private ArrayList<Notes> notes;
+    private ArrayList<Note> notes;
 
     private final onClickItem onClickItem = new onClickItem() {
         @Override
-        public void onClick(Notes notes) {
+        public void onClick(Note notes) {
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             EditFragment editFragment = EditFragment.newInstance(notes);
@@ -61,10 +62,10 @@ public class MainFragment extends Fragment {
     }
 
     interface onClickItem {
-        void onClick(Notes notes);
+        void onClick(Note notes);
     }
 
-    public static MainFragment newInstance(ArrayList<Notes> notes) {
+    public static MainFragment newInstance(ArrayList<Note> notes) {
         MainFragment fragment = new MainFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(BUNDLE, notes);
@@ -81,8 +82,12 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bundle = new Bundle();
-        createList((LinearLayout) view, savedInstanceState);
+        createList(view, savedInstanceState);
         setHasOptionsMenu(true);
+        FloatingActionButton actionButton = view.findViewById(R.id.floating_action_button);
+        actionButton.setOnClickListener(v -> {
+            adapter.appendItem();
+        });
     }
 
     @Override
@@ -96,7 +101,7 @@ public class MainFragment extends Fragment {
                 if (context != null) {
                     FragmentManager fragmentManager = context.getSupportFragmentManager();
                     FragmentTransaction transaction = fragmentManager.beginTransaction();
-                    EditFragment editFragment = EditFragment.newInstance(new Notes());
+                    EditFragment editFragment = EditFragment.newInstance(new Note());
                     editFragment.setTargetFragment(this, REQUEST_CODE);
                     if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
                         transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
@@ -127,19 +132,18 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private void createList(@NonNull LinearLayout container, @Nullable Bundle savedInstanceState) {
+    private void createList(@NonNull View view, @Nullable Bundle savedInstanceState) {
         String[] cities = getResources().getStringArray(R.array.cities);
         if (savedInstanceState != null) {
             notes = savedInstanceState.getParcelableArrayList(LIST);
         } else {
             if (notes == null) {
                 notes = new ArrayList<>();
+                addHeader();
                 for (int i = 0; i < cities.length; i++) {
                     String title = cities[i];
-                    Notes note = new Notes(title, "Описание", R.color.purple_700);
-                    if (i == 0) {
-                        note.setType(HEADER_TYPE);
-                    } else if (i % 2 == 0) {
+                    Note note = new Note(title, "Описание", R.color.purple_700);
+                    if (i % 2 == 0) {
                         note.setType(MainFragmentAdapter.NOTE_TYPE);
                     } else {
                         note.setType(MainFragmentAdapter.REMINDER_TYPE);
@@ -149,9 +153,13 @@ public class MainFragment extends Fragment {
                 }
             }
         }
-        RecyclerView recyclerView = container.findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         adapter = new MainFragmentAdapter(notes, onClickItem);
         recyclerView.setAdapter(adapter);
+    }
+
+    private void addHeader() {
+        notes.add(new Note(HEADER_TYPE));
     }
 
     @Override
@@ -161,7 +169,7 @@ public class MainFragment extends Fragment {
         bundle.putParcelableArrayList(LIST, notes);
     }
 
-    public static ArrayList<Notes> getNote() {
+    public static ArrayList<Note> getNote() {
         return bundle.getParcelableArrayList(LIST);
     }
 }

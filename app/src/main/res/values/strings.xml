@@ -40,5 +40,6 @@
     <string name="settings">Settings</string>
     <string name="add">add</string>
     <string name="clear">clear</string>
+    <string name="list_header">Ваши заметки</string>
 
 </resources>
