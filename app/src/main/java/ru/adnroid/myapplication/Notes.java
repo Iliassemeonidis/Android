@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Notes implements Parcelable {
+    private int type;
+    private String date;
     private String title;
     private String description;
     private int colour;
@@ -29,6 +31,7 @@ public class Notes implements Parcelable {
         this.description = description;
         this.colour = colour;
     }
+
     public Notes() {
     }
 
@@ -42,6 +45,22 @@ public class Notes implements Parcelable {
 
     public int getColour() {
         return colour;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     // Описывает контент и возвращает некторое числовое значение
@@ -58,8 +77,8 @@ public class Notes implements Parcelable {
         dest.writeInt(colour);
     }
 
-    public  Notes getInstance() {
-        return new Notes(title, description,colour);
+    public Notes getInstance() {
+        return new Notes(title, description, colour);
     }
 
 }

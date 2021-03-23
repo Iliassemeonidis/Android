@@ -52,10 +52,10 @@ public class EditFragment extends Fragment {
     private void initView(@NonNull View view, @Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             noteParams = savedInstanceState.getParcelable(NOTE_KEY);
+        } else if (getArguments() != null) {
+            noteParams = getArguments().getParcelable(NOTE_BUNDLE_EXTRA);
         } else {
-            if (getArguments() != null) {
-                noteParams = getArguments().getParcelable(NOTE_BUNDLE_EXTRA);
-            }
+            noteParams = new Notes("", "", 0);
         }
         EditText editTextTitle = view.findViewById(R.id.title_edit_text);
         EditText editTextDescription = view.findViewById(R.id.description_edit_text);

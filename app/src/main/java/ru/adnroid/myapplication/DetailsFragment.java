@@ -88,7 +88,7 @@ public class DetailsFragment extends Fragment {
                 EditFragment editFragment = EditFragment.newInstance(note);
                 editFragment.setTargetFragment(this, REQUEST_CODE);
                 if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
-                    transaction.add(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
+                    transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
                 } else {
                     transaction.replace(R.id.list_container, editFragment, EDIT_FRAGMENT_TAG);
                 }

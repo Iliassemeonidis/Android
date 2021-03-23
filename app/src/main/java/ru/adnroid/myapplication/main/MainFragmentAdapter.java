@@ -14,7 +14,11 @@ import ru.adnroid.myapplication.Notes;
 import ru.adnroid.myapplication.R;
 import ru.adnroid.myapplication.main.MainFragment.onClickItem;
 
-public class MainFragmentAdapter extends RecyclerView.Adapter<MainFragmentAdapter.MainFragmentViewHolder> {
+public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    public static final int NOTE_TYPE = 0;
+    public static final int REMINDER_TYPE = 1;
+    public static final int HEADER_TYPE = 2;
 
     private ArrayList<Notes> notes;
     private final onClickItem onClickItem;
@@ -26,14 +30,39 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<MainFragmentAdapte
 
     @NonNull
     @Override
-    public MainFragmentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-        return new MainFragmentViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View view;
+        switch (viewType) {
+            case NOTE_TYPE:
+                view = inflater.inflate(R.layout.list_item, parent, false);
+                return new MainFragmentViewHolderNote(view);
+            case REMINDER_TYPE:
+                view = inflater.inflate(R.layout.list_item_remind, parent, false);
+                return new MainFragmentViewHolderReminder(view);
+            case HEADER_TYPE:
+                view = inflater.inflate(R.layout.list_item_header, parent, false);
+                return new MainFragmentViewHolderHeader(view);
+            default:
+                view = inflater.inflate(R.layout.list_item_note, parent, false);
+                return new MainFragmentViewHolderNote(view);
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MainFragmentViewHolder holder, int position) {
-        holder.bind(notes.get(position).getTitle());
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        int type = notes.get(position).getType();
+        Notes note = notes.get(position);
+        switch (type) {
+            case REMINDER_TYPE:
+                ((MainFragmentViewHolderReminder) holder).bind(note.getTitle(), note.getDate());
+                break;
+            case HEADER_TYPE:
+                ((MainFragmentViewHolderHeader) holder).bind(note.getTitle());
+                break;
+            default:
+                ((MainFragmentViewHolderNote) holder).bind(note.getTitle());
+        }
     }
 
     @Override
@@ -41,15 +70,20 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<MainFragmentAdapte
         return notes.size();
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return notes.get(position).getType();
+    }
+
     void setNewList(ArrayList<Notes> notes) {
         this.notes = notes;
         notifyDataSetChanged();
     }
 
-    class MainFragmentViewHolder extends RecyclerView.ViewHolder {
+    class MainFragmentViewHolderNote extends RecyclerView.ViewHolder {
         private final TextView textView;
 
-        public MainFragmentViewHolder(@NonNull View itemView) {
+        public MainFragmentViewHolderNote(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.list_item_text_view);
             itemView.setOnClickListener(v -> {
@@ -59,6 +93,42 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<MainFragmentAdapte
 
         private void bind(String notes) {
             textView.setText(notes);
+        }
+    }
+
+    class MainFragmentViewHolderReminder extends RecyclerView.ViewHolder {
+
+        private final TextView textView;
+        private final TextView date;
+
+        public MainFragmentViewHolderReminder(@NonNull View itemView) {
+            super(itemView);
+            textView = itemView.findViewById(R.id.list_item_reminder);
+            date = itemView.findViewById(R.id.list_item_date);
+            itemView.setOnClickListener(v -> {
+                onClickItem.onClick(notes.get(getAdapterPosition()));
+            });
+        }
+
+        private void bind(String reminder, String reminderDate) {
+            textView.setText(reminder);
+            date.setText(reminderDate);
+        }
+    }
+
+    class MainFragmentViewHolderHeader extends RecyclerView.ViewHolder {
+        private final TextView textView;
+
+        public MainFragmentViewHolderHeader(@NonNull View itemView) {
+            super(itemView);
+            textView = itemView.findViewById(R.id.list_item_header);
+            itemView.setOnClickListener(v -> {
+                onClickItem.onClick(notes.get(getAdapterPosition()));
+            });
+        }
+
+        private void bind(String header) {
+            textView.setText(header);
         }
     }
 }
