@@ -35,15 +35,13 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view;
         switch (viewType) {
-            case NOTE_TYPE:
-                view = inflater.inflate(R.layout.list_item_note, parent, false);
-                return new MainFragmentViewHolderNote(view);
             case REMINDER_TYPE:
                 view = inflater.inflate(R.layout.list_item_remind, parent, false);
                 return new MainFragmentViewHolderReminder(view);
             case HEADER_TYPE:
                 view = inflater.inflate(R.layout.list_item_header, parent, false);
                 return new MainFragmentViewHolderHeader(view);
+            case NOTE_TYPE:
             default:
                 view = inflater.inflate(R.layout.list_item_note, parent, false);
                 return new MainFragmentViewHolderNote(view);

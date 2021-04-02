@@ -48,10 +48,8 @@ public class MainFragment extends Fragment {
             editFragment.setTargetFragment(new MainFragment(), REQUEST_CODE);
             if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
                 transaction.replace(R.id.details_container, EditFragment.newInstance(notes), EDIT_FRAGMENT_TAG);
-//                    transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
             } else {
                 transaction.add(R.id.list_container, EditFragment.newInstance(notes), EDIT_FRAGMENT_TAG);
-//                    transaction.replace(R.id.list_container,editFragment, EDIT_FRAGMENT_TAG);
                 transaction.addToBackStack(null);
             }
             transaction.commitAllowingStateLoss();
@@ -125,6 +123,8 @@ public class MainFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            if (notes.isEmpty()){ addHeader();}
+
             if (data != null) {
                 notes.add(data.getParcelableExtra(EXTRA_PARAMS));
                 adapter.setNewList(notes);
