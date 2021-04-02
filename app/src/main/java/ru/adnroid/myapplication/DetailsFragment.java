@@ -25,7 +25,6 @@ import ru.adnroid.myapplication.utils.ViewUtils;
 
 public class DetailsFragment extends Fragment {
 
-    public static final int REQUEST_CODE = 42;
     public static final String EXTRA_PARAMS = "EXTRA_PARAMS";
     private static final String BUNDLE_EXTRA = "BUNDLE_EXTRA";
     public static final String EDIT_FRAGMENT_TAG = "EDIT_FRAGMENT_TAG";

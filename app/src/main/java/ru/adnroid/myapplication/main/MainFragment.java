@@ -28,13 +28,14 @@ import ru.adnroid.myapplication.utils.ViewUtils;
 
 import static ru.adnroid.myapplication.DetailsFragment.EDIT_FRAGMENT_TAG;
 import static ru.adnroid.myapplication.DetailsFragment.EXTRA_PARAMS;
-import static ru.adnroid.myapplication.DetailsFragment.REQUEST_CODE;
 import static ru.adnroid.myapplication.main.MainFragmentAdapter.HEADER_TYPE;
 
 public class MainFragment extends Fragment {
 
     public static final String BUNDLE = "BUNDLE";
     public static final String LIST = "LIST";
+    private static final int REQUEST_CODE_EDIT = 42;
+    private static final int REQUEST_CODE_CREATE = 41;
     private static Bundle bundle;
     private MainFragmentAdapter adapter;
     private ArrayList<Note> notes;
@@ -45,11 +46,11 @@ public class MainFragment extends Fragment {
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             EditFragment editFragment = EditFragment.newInstance(notes);
-            editFragment.setTargetFragment(new MainFragment(), REQUEST_CODE);
+            editFragment.setTargetFragment(MainFragment.this, REQUEST_CODE_EDIT);
             if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
-                transaction.replace(R.id.details_container, EditFragment.newInstance(notes), EDIT_FRAGMENT_TAG);
+                transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
             } else {
-                transaction.add(R.id.list_container, EditFragment.newInstance(notes), EDIT_FRAGMENT_TAG);
+                transaction.add(R.id.list_container, editFragment, EDIT_FRAGMENT_TAG);
                 transaction.addToBackStack(null);
             }
             transaction.commitAllowingStateLoss();
@@ -84,6 +85,9 @@ public class MainFragment extends Fragment {
         setHasOptionsMenu(true);
         FloatingActionButton actionButton = view.findViewById(R.id.floating_action_button);
         actionButton.setOnClickListener(v -> {
+            if (notes.isEmpty()) {
+                addHeader();
+            }
             adapter.appendItem();
         });
     }
@@ -100,7 +104,7 @@ public class MainFragment extends Fragment {
                     FragmentManager fragmentManager = context.getSupportFragmentManager();
                     FragmentTransaction transaction = fragmentManager.beginTransaction();
                     EditFragment editFragment = EditFragment.newInstance(new Note());
-                    editFragment.setTargetFragment(this, REQUEST_CODE);
+                    editFragment.setTargetFragment(this, REQUEST_CODE_EDIT);
                     if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
                         transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
                     } else {
@@ -122,9 +126,11 @@ public class MainFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            if (notes.isEmpty()){ addHeader();}
-
+        if (resultCode == Activity.RESULT_OK) {
+            switch ()
+            if (notes.isEmpty()) {
+                addHeader();
+            }
             if (data != null) {
                 notes.add(data.getParcelableExtra(EXTRA_PARAMS));
                 adapter.setNewList(notes);
