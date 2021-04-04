@@ -42,11 +42,12 @@ public class MainFragment extends Fragment {
 
     private final onClickItem onClickItem = new onClickItem() {
         @Override
-        public void onClick(Note notes) {
+        public void onClick(Note note, int position) {
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-            EditFragment editFragment = EditFragment.newInstance(notes);
+            EditFragment editFragment = EditFragment.newInstance(note);
             editFragment.setTargetFragment(MainFragment.this, REQUEST_CODE_EDIT);
+            notes.remove(position);
             if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
                 transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
             } else {
@@ -61,7 +62,7 @@ public class MainFragment extends Fragment {
     }
 
     interface onClickItem {
-        void onClick(Note notes);
+        void onClick(Note notes, int position);
     }
 
     public static MainFragment newInstance(ArrayList<Note> notes) {
@@ -127,14 +128,14 @@ public class MainFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            switch ()
             if (notes.isEmpty()) {
                 addHeader();
             }
             if (data != null) {
-                notes.add(data.getParcelableExtra(EXTRA_PARAMS));
+                notes.add(1,data.getParcelableExtra(EXTRA_PARAMS));
                 adapter.setNewList(notes);
             }
+
         }
     }
 

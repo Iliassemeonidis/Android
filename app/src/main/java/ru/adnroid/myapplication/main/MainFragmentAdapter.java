@@ -3,7 +3,6 @@ package ru.adnroid.myapplication.main;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -91,17 +90,17 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     ///Region Holder
     class MainFragmentViewHolderNote extends RecyclerView.ViewHolder {
         private final TextView textView;
-        private final ImageView add;
-        private final ImageView remove;
+        private Note note;
+        private int position;
 
         public MainFragmentViewHolderNote(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.list_item_text_view);
-            add = itemView.findViewById(R.id.add_item);
-            remove = itemView.findViewById(R.id.remove_item);
-            itemView.setOnClickListener(v -> onClickItem.onClick(notes.get(getAdapterPosition())));
-            add.setOnClickListener(v -> addItem());
-            remove.setOnClickListener(v -> removeItem());
+            itemView.setOnClickListener(v -> onClickItem.onClick(notes.get(getAdapterPosition()), getAdapterPosition()));
+            itemView.findViewById(R.id.add_item).setOnClickListener(v -> addItem());
+            itemView.findViewById(R.id.remove_item).setOnClickListener(v -> removeItem());
+            itemView.findViewById(R.id.moveItemUp).setOnClickListener(v -> moveItemUp());
+            itemView.findViewById(R.id.moveItemDown).setOnClickListener(v -> moveItemDown());
         }
 
         private void addItem() {
@@ -117,6 +116,26 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void bind(String notes) {
             textView.setText(notes);
         }
+
+        private void moveItemUp() {
+            position = getLayoutPosition();
+            if (position > 1) {
+                note = notes.get(position - 1);
+                notes.remove(notes.get(position - 1));
+                notes.add(position, note);
+                notifyItemMoved(position, position - 1);
+            }
+        }
+
+        private void moveItemDown() {
+            position = getLayoutPosition();
+            if (position < getItemCount() - 1) {
+                note = notes.get(position + 1);
+                notes.remove(notes.get(position + 1));
+                notes.add(position, note);
+                notifyItemMoved(position, position + 1);
+            }
+        }
     }
 
     class MainFragmentViewHolderReminder extends RecyclerView.ViewHolder {
@@ -128,7 +147,7 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             super(itemView);
             textView = itemView.findViewById(R.id.list_item_reminder);
             date = itemView.findViewById(R.id.list_item_date);
-            itemView.setOnClickListener(v -> onClickItem.onClick(notes.get(getAdapterPosition())));
+            itemView.setOnClickListener(v -> onClickItem.onClick(notes.get(getAdapterPosition()), getAdapterPosition()));
         }
 
         private void bind(String reminder, String reminderDate) {
@@ -144,7 +163,7 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         public MainFragmentViewHolderHeader(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.list_item_header);
-            itemView.setOnClickListener(v -> onClickItem.onClick(notes.get(getAdapterPosition())));
+            itemView.setOnClickListener(v -> onClickItem.onClick(notes.get(getAdapterPosition()), getAdapterPosition()));
         }
 
         private void bind() {
