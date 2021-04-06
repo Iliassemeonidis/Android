@@ -1,5 +1,6 @@
 package ru.adnroid.myapplication.main;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -93,13 +94,11 @@ public class MainFragment extends Fragment {
         });
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        final int add_item = R.id.add_item;
-        final int clear = R.id.clear;
-
         switch (item.getItemId()) {
-            case add_item:
+            case R.id.add_item:
                 FragmentActivity context = getActivity();
                 if (context != null) {
                     FragmentManager fragmentManager = context.getSupportFragmentManager();
@@ -115,7 +114,7 @@ public class MainFragment extends Fragment {
                     transaction.commitAllowingStateLoss();
                 }
                 return true;
-            case clear:
+            case R.id.clear:
                 notes.clear();
                 adapter.setNewList(notes);
                 return true;
@@ -132,7 +131,7 @@ public class MainFragment extends Fragment {
                 addHeader();
             }
             if (data != null) {
-                notes.add(1,data.getParcelableExtra(EXTRA_PARAMS));
+                notes.add(1, data.getParcelableExtra(EXTRA_PARAMS));
                 adapter.setNewList(notes);
             }
 

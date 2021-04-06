@@ -41,5 +41,6 @@
     <string name="add">add</string>
     <string name="clear">clear</string>
     <string name="list_header">Ваши заметки</string>
+    <string name="search">Search</string>
 
 </resources>
