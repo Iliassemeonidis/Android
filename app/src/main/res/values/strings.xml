@@ -3,6 +3,8 @@
     <string name="text">Text</string>
     <string name="city">City</string>
     <string name="description">Description</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string-array name="cities">
         <item>Заметка Москва</item>
