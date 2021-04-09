@@ -55,6 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        app:headerLayout="@layout/drawer_header"
         android:fitsSystemWindows="true"
-        app:menu="@menu/main_menu" />
+        app:menu="@menu/fragment_menu" />
 </androidx.drawerlayout.widget.DrawerLayout>

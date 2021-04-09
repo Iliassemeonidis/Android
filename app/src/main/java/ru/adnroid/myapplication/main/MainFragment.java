@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +19,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ public class MainFragment extends Fragment {
     private static Bundle bundle;
     private MainFragmentAdapter adapter;
     private ArrayList<Note> notes;
+    private int removePosition;
 
     private final onClickItem onClickItem = new onClickItem() {
         @Override
@@ -48,7 +51,7 @@ public class MainFragment extends Fragment {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             EditFragment editFragment = EditFragment.newInstance(note);
             editFragment.setTargetFragment(MainFragment.this, REQUEST_CODE_EDIT);
-            notes.remove(position);
+            removePosition = position;
             if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
                 transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
             } else {
@@ -85,12 +88,44 @@ public class MainFragment extends Fragment {
         bundle = new Bundle();
         createList(view, savedInstanceState);
         setHasOptionsMenu(true);
+//        initBottomNavigationView(view);
         FloatingActionButton actionButton = view.findViewById(R.id.floating_action_button);
         actionButton.setOnClickListener(v -> {
             if (notes.isEmpty()) {
                 addHeader();
             }
             adapter.appendItem();
+        });
+    }
+
+    private void initBottomNavigationView(@NonNull View view) {
+        BottomNavigationView bottomNavigationView = view.findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            //FIXME write realisations
+            if (item.getTitle().equals("add")) {
+                FragmentActivity context = getActivity();
+                if (context != null) {
+                    FragmentManager fragmentManager = context.getSupportFragmentManager();
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                    EditFragment editFragment = EditFragment.newInstance(new Note());
+                    editFragment.setTargetFragment(this, REQUEST_CODE_EDIT);
+                    if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
+                        transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
+                    } else {
+                        transaction.replace(R.id.list_container, editFragment, EDIT_FRAGMENT_TAG);
+                    }
+                    transaction.addToBackStack(null);
+                    transaction.commitAllowingStateLoss();
+                }
+            } else if (item.getTitle().equals("clear")) {
+                notes.clear();
+                adapter.setNewList(notes);
+                return true;
+            }
+            return true;
+        });
+        bottomNavigationView.setOnNavigationItemReselectedListener(item -> {
+//            Toast.makeText(MainActivity.this, "Reselected", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -131,6 +166,7 @@ public class MainFragment extends Fragment {
                 addHeader();
             }
             if (data != null) {
+                notes.remove(removePosition);
                 notes.add(1, data.getParcelableExtra(EXTRA_PARAMS));
                 adapter.setNewList(notes);
             }

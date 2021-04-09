@@ -44,5 +44,10 @@
     <string name="clear">clear</string>
     <string name="list_header">Ваши заметки</string>
     <string name="search">Search</string>
+    <string name="shopping">Shopping</string>
+    <string name="saved_notes">Notes</string>
+    <string name="settings_title">Настройки</string>
+    <string name="shopping_title">Покупки</string>
+    <string name="drawer_header_text">Drawer Header</string>
 
 </resources>

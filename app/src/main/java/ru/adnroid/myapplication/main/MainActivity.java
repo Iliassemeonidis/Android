@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,18 +25,25 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 import ru.adnroid.myapplication.EditFragment;
+import ru.adnroid.myapplication.Note;
 import ru.adnroid.myapplication.R;
 import ru.adnroid.myapplication.ResultActivity;
+import ru.adnroid.myapplication.fragments.SettingsFragment;
+import ru.adnroid.myapplication.fragments.ShoppingFragment;
+import ru.adnroid.myapplication.utils.ViewUtils;
 
 import static ru.adnroid.myapplication.DetailsFragment.EDIT_FRAGMENT_TAG;
 import static ru.adnroid.myapplication.EditFragment.getNote;
 import static ru.adnroid.myapplication.ResultActivity.EXTRA_KEY_RESULT;
+import static ru.adnroid.myapplication.main.MainFragment.REQUEST_CODE_EDIT;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final int REQUEST_CODE = 42;
     public static final String EXTRA_KEY = "EXTRA_KEY";
     private static final String MAIN_FRAGMENT_TAG = "MAIN_FRAGMENT_TAG";
+    private static final String SETTINGS_FRAGMENT_TAG = "SETTINGS_FRAGMENT_TAG";
+    private static final String SHOPPING_FRAGMENT_TAG = "SHOPPING_FRAGMENT_TAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +52,26 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            Toast.makeText(MainActivity.this, item.getTitle(), Toast.LENGTH_SHORT).show();
+            //FIXME write realisations
+//            if (item.getTitle().equals("add")) {
+//                FragmentManager fragmentManager = getSupportFragmentManager();
+//                FragmentTransaction transaction = fragmentManager.beginTransaction();
+//                EditFragment editFragment = EditFragment.newInstance(new Note());
+//                editFragment.setTargetFragment();
+//                if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
+//                    transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
+//                } else {
+//                    transaction.replace(R.id.list_container, editFragment, EDIT_FRAGMENT_TAG);
+//                }
+//                transaction.addToBackStack(null);
+//                transaction.commitAllowingStateLoss();
+//            } else if (item.getTitle().equals("clear")) {
+//                Toast.makeText(MainActivity.this, item.getTitle(), Toast.LENGTH_SHORT).show();
+//            }
             return true;
         });
         bottomNavigationView.setOnNavigationItemReselectedListener(item -> {
-            //Toast.makeText(MainActivity.this, "Reselected", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "Reselected", Toast.LENGTH_SHORT).show();
         });
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -55,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         initDrawer(toolbar);
 
         if (savedInstanceState == null) {
-            addMainFragment();
+            addNewFragment(new MainFragment(), MAIN_FRAGMENT_TAG);
         }
         addFragment(savedInstanceState);
     }
@@ -74,8 +98,27 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Toast.makeText(MainActivity.this, item.getTitle(), Toast.LENGTH_SHORT).show();
+                switch (item.getTitle().toString()) {
+                    case "Shopping":
+                        addNewFragment(new ShoppingFragment(), SHOPPING_FRAGMENT_TAG);
+                        break;
+                    case "Settings":
+                        addNewFragment(new SettingsFragment(), SETTINGS_FRAGMENT_TAG);
+                        break;
+                    default:
+                        addNewFragment(new MainFragment(), MAIN_FRAGMENT_TAG);
+                        break;
+                }
                 return true;
+            }
+        });
+
+        navigationView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                navigationView.removeOnLayoutChangeListener(this);
+                TextView textView = (TextView) navigationView.findViewById(R.id.drawerHeaderTitle);
+                textView.setText(R.string.drawer_header_text);
             }
         });
     }
@@ -104,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -114,13 +156,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, title, Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    public void addMainFragment() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.list_container, new MainFragment(), MAIN_FRAGMENT_TAG);
-        transaction.commitAllowingStateLoss();
     }
 
     public void addFragment(Bundle savedInstanceState) {
@@ -143,5 +178,22 @@ public class MainActivity extends AppCompatActivity {
             transaction.remove(fragment);
         }
     }
+
+    //FIXME доработать добавление новых фрагментов
+    private void addNewFragment(Fragment fragment, String tag) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        Fragment fragmentId = fragmentManager.findFragmentById(R.id.list_container);
+//        if (fragmentManager.findFragmentByTag(tag) != null) {
+            removeFragment(transaction, fragmentId);
+//        } else {
+            transaction.replace(R.id.list_container, fragment, tag);
+//            transaction.addToBackStack(null);
+            transaction.commitAllowingStateLoss();
+//        }
+
+
+    }
+
 }
 
