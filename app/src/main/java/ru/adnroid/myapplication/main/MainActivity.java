@@ -25,17 +25,14 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 import ru.adnroid.myapplication.EditFragment;
-import ru.adnroid.myapplication.Note;
 import ru.adnroid.myapplication.R;
 import ru.adnroid.myapplication.ResultActivity;
 import ru.adnroid.myapplication.fragments.SettingsFragment;
 import ru.adnroid.myapplication.fragments.ShoppingFragment;
-import ru.adnroid.myapplication.utils.ViewUtils;
 
 import static ru.adnroid.myapplication.DetailsFragment.EDIT_FRAGMENT_TAG;
 import static ru.adnroid.myapplication.EditFragment.getNote;
 import static ru.adnroid.myapplication.ResultActivity.EXTRA_KEY_RESULT;
-import static ru.adnroid.myapplication.main.MainFragment.REQUEST_CODE_EDIT;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -98,17 +95,18 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getTitle().toString()) {
-                    case "Shopping":
+                switch (item.getItemId()) {
+                    case R.id.my_shopping:
                         addNewFragment(new ShoppingFragment(), SHOPPING_FRAGMENT_TAG);
                         break;
-                    case "Settings":
+                    case R.id.settings:
                         addNewFragment(new SettingsFragment(), SETTINGS_FRAGMENT_TAG);
                         break;
-                    default:
+                    case R.id.saved_notes:
                         addNewFragment(new MainFragment(), MAIN_FRAGMENT_TAG);
                         break;
                 }
+                drawer.closeDrawers();
                 return true;
             }
         });
@@ -123,11 +121,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        //TODO Спрашивать про выход из приложения
+        super.onBackPressed();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        inflater.inflate(R.menu.main_bottom_navigation, menu);
 
         MenuItem menuItem = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) menuItem.getActionView();
@@ -185,11 +188,11 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         Fragment fragmentId = fragmentManager.findFragmentById(R.id.list_container);
 //        if (fragmentManager.findFragmentByTag(tag) != null) {
-            removeFragment(transaction, fragmentId);
+        removeFragment(transaction, fragmentId);
 //        } else {
-            transaction.replace(R.id.list_container, fragment, tag);
+        transaction.replace(R.id.list_container, fragment, tag);
 //            transaction.addToBackStack(null);
-            transaction.commitAllowingStateLoss();
+        transaction.commitAllowingStateLoss();
 //        }
 
 

@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -63,18 +62,6 @@ public class MainFragment extends Fragment {
     };
 
     public MainFragment() {
-    }
-
-    interface onClickItem {
-        void onClick(Note notes, int position);
-    }
-
-    public static MainFragment newInstance(ArrayList<Note> notes) {
-        MainFragment fragment = new MainFragment();
-        Bundle args = new Bundle();
-        args.putParcelableArrayList(BUNDLE, notes);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -213,5 +200,9 @@ public class MainFragment extends Fragment {
 
     public static ArrayList<Note> getNote() {
         return bundle.getParcelableArrayList(LIST);
+    }
+
+    interface onClickItem {
+        void onClick(Note notes, int position);
     }
 }

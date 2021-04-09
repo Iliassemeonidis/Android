@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:labelVisibilityMode="selected"
-            app:menu="@menu/main_menu" />
+            app:menu="@menu/main_bottom_navigation" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView
@@ -57,5 +57,5 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/drawer_header"
         android:fitsSystemWindows="true"
-        app:menu="@menu/fragment_menu" />
+        app:menu="@menu/main_drawer" />
 </androidx.drawerlayout.widget.DrawerLayout>
