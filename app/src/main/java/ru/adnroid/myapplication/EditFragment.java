@@ -2,40 +2,30 @@ package ru.adnroid.myapplication;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import static ru.adnroid.myapplication.DetailsFragment.EXTRA_PARAMS;
+import static ru.adnroid.myapplication.main.MainFragment.EXTRA_PARAMS;
 
 public class EditFragment extends Fragment {
 
     public static final int REQUEST_CODE_ADD = 42;
-    private static final String NOTE_BUNDLE_EXTRA = "NOTE_BUNDLE_EXTRA";
     public static final String NOTE_KEY = "NOTE_KEY";
-    private int color;
-    private static Bundle bundle;
+    private static final String NOTE_BUNDLE_EXTRA = "NOTE_BUNDLE_EXTRA";
     private Note noteParams;
-
-    public static EditFragment newInstance(Note param1) {
-        EditFragment fragment = new EditFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(NOTE_BUNDLE_EXTRA, param1);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private int color;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,7 +36,20 @@ public class EditFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView(view, savedInstanceState);
-        initSpinner(view);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(NOTE_KEY, noteParams);
+    }
+
+    public static EditFragment newInstance(Note param1) {
+        EditFragment fragment = new EditFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(NOTE_BUNDLE_EXTRA, param1);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     private void initView(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -59,46 +62,26 @@ public class EditFragment extends Fragment {
         }
         EditText editTextTitle = view.findViewById(R.id.title_edit_text);
         EditText editTextDescription = view.findViewById(R.id.description_edit_text);
-        bundle = new Bundle();
+        RadioGroup radioGroup = view.findViewById(R.id.spinner_colors);
         editTextTitle.setText(noteParams.getTitle());
         editTextDescription.setText(noteParams.getDescription());
-        initButtonSave(view, editTextTitle, editTextDescription);
-    }
-
-    private void initSpinner(@NonNull View view/*, int spinnerPosition*/) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.colors));
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Spinner spinnerColors = view.findViewById(R.id.spinner_colors);
-        spinnerColors.setAdapter(adapter);
-          /*if(spinnerPosition >=0){
-            //spinner set position
-        }*/
-        spinnerColors.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        color = Color.BLACK;
-                        break;
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
                     case 1:
-                        color = Color.WHITE;
+                        color = R.color.red;
                         break;
                     case 2:
-                        color = Color.BLUE;
+                        color = R.color.yellow;
                         break;
                     case 3:
-                        color = Color.RED;
-                        break;
-                    case 4:
-                        color = Color.GREEN;
+                        color = R.color.green;
                         break;
                 }
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
         });
+        initButtonSave(view, editTextTitle, editTextDescription);
     }
 
     private void initButtonSave(@NonNull View view, EditText editTextTitle, EditText editTextDescription) {
@@ -106,29 +89,32 @@ public class EditFragment extends Fragment {
         buttonSave.setOnClickListener(v -> {
             FragmentActivity fragmentActivity = getActivity();
             if (fragmentActivity != null) {
-                String title = editTextTitle.getText().toString();
-                String description = editTextDescription.getText().toString();
-                Note params = new Note(title, description, color);
-                Intent result = new Intent();
-                result.putExtra(EXTRA_PARAMS, params);
+                if (credentialsAreValid(editTextTitle.getText().toString(), editTextDescription.getText().toString())) {
+                    String title = editTextTitle.getText().toString();
+                    String description = editTextDescription.getText().toString();
+                    Note params = new Note(title, description, color);
+                    Intent result = new Intent();
+                    result.putExtra(EXTRA_PARAMS, params);
 
-                Fragment targetFragment = getTargetFragment();
-                if (targetFragment != null) {
-                    targetFragment.onActivityResult(REQUEST_CODE_ADD, Activity.RESULT_OK, result);
-                    fragmentActivity.getSupportFragmentManager().popBackStack();
+                    Fragment targetFragment = getTargetFragment();
+                    if (targetFragment != null) {
+                        targetFragment.onActivityResult(REQUEST_CODE_ADD, Activity.RESULT_OK, result);
+                        fragmentActivity.getSupportFragmentManager().popBackStack();
+                    }
+                } else {
+                    Toast.makeText(fragmentActivity, "Заполните пустые поля", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(NOTE_KEY, noteParams);
-        bundle.putParcelable(NOTE_KEY, noteParams);
-    }
-
-    public static Note getNote() {
-        return bundle.getParcelable(NOTE_KEY);
+    private boolean credentialsAreValid(String title, String description) {
+        int errorCount = 0;
+        if (title.isEmpty() || description.isEmpty()) {
+            errorCount++;
+        } else if (!title.matches(".*\\w.*") || !description.matches(".*\\w.*")) {
+            errorCount++;
+        }
+        return errorCount == 0;
     }
 }

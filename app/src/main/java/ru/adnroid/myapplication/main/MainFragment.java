@@ -28,16 +28,14 @@ import ru.adnroid.myapplication.Note;
 import ru.adnroid.myapplication.R;
 import ru.adnroid.myapplication.utils.ViewUtils;
 
-import static ru.adnroid.myapplication.DetailsFragment.EDIT_FRAGMENT_TAG;
-import static ru.adnroid.myapplication.DetailsFragment.EXTRA_PARAMS;
 import static ru.adnroid.myapplication.main.MainFragmentAdapter.HEADER_TYPE;
 
 public class MainFragment extends Fragment {
 
-    public static final String BUNDLE = "BUNDLE";
     public static final String LIST = "LIST";
     private static final int REQUEST_CODE_EDIT = 42;
-    private static final int REQUEST_CODE_CREATE = 41;
+    public static final String EDIT_FRAGMENT_TAG = "EDIT_FRAGMENT_TAG";
+    public static final String EXTRA_PARAMS = "EXTRA_PARAMS";
     private static Bundle bundle;
     private MainFragmentAdapter adapter;
     private ArrayList<Note> notes;
@@ -75,44 +73,12 @@ public class MainFragment extends Fragment {
         bundle = new Bundle();
         createList(view, savedInstanceState);
         setHasOptionsMenu(true);
-//        initBottomNavigationView(view);
         FloatingActionButton actionButton = view.findViewById(R.id.floating_action_button);
         actionButton.setOnClickListener(v -> {
             if (notes.isEmpty()) {
                 addHeader();
             }
             adapter.appendItem();
-        });
-    }
-
-    private void initBottomNavigationView(@NonNull View view) {
-        BottomNavigationView bottomNavigationView = view.findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            //FIXME write realisations
-            if (item.getTitle().equals("add")) {
-                FragmentActivity context = getActivity();
-                if (context != null) {
-                    FragmentManager fragmentManager = context.getSupportFragmentManager();
-                    FragmentTransaction transaction = fragmentManager.beginTransaction();
-                    EditFragment editFragment = EditFragment.newInstance(new Note());
-                    editFragment.setTargetFragment(this, REQUEST_CODE_EDIT);
-                    if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
-                        transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
-                    } else {
-                        transaction.replace(R.id.list_container, editFragment, EDIT_FRAGMENT_TAG);
-                    }
-                    transaction.addToBackStack(null);
-                    transaction.commitAllowingStateLoss();
-                }
-            } else if (item.getTitle().equals("clear")) {
-                notes.clear();
-                adapter.setNewList(notes);
-                return true;
-            }
-            return true;
-        });
-        bottomNavigationView.setOnNavigationItemReselectedListener(item -> {
-//            Toast.makeText(MainActivity.this, "Reselected", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -127,6 +93,7 @@ public class MainFragment extends Fragment {
                     FragmentTransaction transaction = fragmentManager.beginTransaction();
                     EditFragment editFragment = EditFragment.newInstance(new Note());
                     editFragment.setTargetFragment(this, REQUEST_CODE_EDIT);
+
                     if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
                         transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
                     } else {
@@ -149,11 +116,11 @@ public class MainFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            if (notes.isEmpty()) {
+            if (notes.isEmpty() || notes.size() <= 1) {
                 addHeader();
             }
+//            notes.remove(removePosition);
             if (data != null) {
-                notes.remove(removePosition);
                 notes.add(1, data.getParcelableExtra(EXTRA_PARAMS));
                 adapter.setNewList(notes);
             }
@@ -171,7 +138,7 @@ public class MainFragment extends Fragment {
                 addHeader();
                 for (int i = 0; i < cities.length; i++) {
                     String title = cities[i];
-                    Note note = new Note(title, "Описание", R.color.purple_700);
+                    Note note = new Note(title, "Описание", R.color.green);
                     if (i % 2 == 0) {
                         note.setType(MainFragmentAdapter.NOTE_TYPE);
                     } else {
@@ -188,7 +155,7 @@ public class MainFragment extends Fragment {
     }
 
     private void addHeader() {
-        notes.add(new Note(HEADER_TYPE));
+        notes.add(0,new Note(HEADER_TYPE));
     }
 
     @Override
@@ -196,10 +163,6 @@ public class MainFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(LIST, notes);
         bundle.putParcelableArrayList(LIST, notes);
-    }
-
-    public static ArrayList<Note> getNote() {
-        return bundle.getParcelableArrayList(LIST);
     }
 
     interface onClickItem {

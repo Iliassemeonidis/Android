@@ -81,8 +81,4 @@ public class Note implements Parcelable {
         dest.writeInt(colour);
     }
 
-    public Note getInstance() {
-        return new Note(title, description, colour);
-    }
-
 }

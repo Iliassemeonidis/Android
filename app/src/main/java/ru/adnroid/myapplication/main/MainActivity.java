@@ -1,7 +1,7 @@
 package ru.adnroid.myapplication.main;
 
-import android.content.Intent;
-import android.content.res.Configuration;
+import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,8 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -24,15 +24,13 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.List;
+
 import ru.adnroid.myapplication.EditFragment;
+import ru.adnroid.myapplication.Note;
 import ru.adnroid.myapplication.R;
-import ru.adnroid.myapplication.ResultActivity;
 import ru.adnroid.myapplication.fragments.SettingsFragment;
 import ru.adnroid.myapplication.fragments.ShoppingFragment;
-
-import static ru.adnroid.myapplication.DetailsFragment.EDIT_FRAGMENT_TAG;
-import static ru.adnroid.myapplication.EditFragment.getNote;
-import static ru.adnroid.myapplication.ResultActivity.EXTRA_KEY_RESULT;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String MAIN_FRAGMENT_TAG = "MAIN_FRAGMENT_TAG";
     private static final String SETTINGS_FRAGMENT_TAG = "SETTINGS_FRAGMENT_TAG";
     private static final String SHOPPING_FRAGMENT_TAG = "SHOPPING_FRAGMENT_TAG";
+    public static final String EDIT_FRAGMENT_TAG = "EDIT_FRAGMENT_TAG";
+
+    private FragmentManager fragmentManage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,22 +50,24 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            //FIXME write realisations
-//            if (item.getTitle().equals("add")) {
-//                FragmentManager fragmentManager = getSupportFragmentManager();
-//                FragmentTransaction transaction = fragmentManager.beginTransaction();
-//                EditFragment editFragment = EditFragment.newInstance(new Note());
-//                editFragment.setTargetFragment();
-//                if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
-//                    transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
-//                } else {
-//                    transaction.replace(R.id.list_container, editFragment, EDIT_FRAGMENT_TAG);
-//                }
-//                transaction.addToBackStack(null);
-//                transaction.commitAllowingStateLoss();
-//            } else if (item.getTitle().equals("clear")) {
-//                Toast.makeText(MainActivity.this, item.getTitle(), Toast.LENGTH_SHORT).show();
-//            }
+            switch (item.getItemId()) {
+                case R.id.add_item:
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                    EditFragment editFragment = EditFragment.newInstance(new Note());
+
+                    editFragment.setTargetFragment(editFragment, REQUEST_CODE);
+                    transaction.replace(R.id.list_container, editFragment, EDIT_FRAGMENT_TAG);
+                    transaction.addToBackStack(null);
+                    transaction.commitAllowingStateLoss();
+                    break;
+                case R.id.clear:
+                    // бла бла бла
+
+                    break;
+            }
+
+
             return true;
         });
         bottomNavigationView.setOnNavigationItemReselectedListener(item -> {
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             addNewFragment(new MainFragment(), MAIN_FRAGMENT_TAG);
         }
-        addFragment(savedInstanceState);
+//        addFragment(savedInstanceState);
     }
 
     private void initDrawer(Toolbar toolbar) {
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         // Обработка навигационного меню
         NavigationView navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
@@ -123,8 +127,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        //TODO Спрашивать про выход из приложения
-        super.onBackPressed();
+        if (fragmentManage.getBackStackEntryCount() == 0) {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+
+            dialog.setTitle("Notification");
+            dialog.setMessage("Do you want to leave the application?");
+            dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    MainActivity.super.onBackPressed();
+                }
+            });
+            dialog.setNegativeButton("NO", null);
+            dialog.create().show();
+        } else {
+            super.onBackPressed();
+        }
+
     }
 
     @Override
@@ -150,31 +169,20 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE && resultCode == ResultActivity.RESULT_OK) {
-            if (data != null) {
-                String title = data.getStringExtra(EXTRA_KEY_RESULT);
-                Toast.makeText(this, title, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    public void addFragment(Bundle savedInstanceState) {
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            Fragment fragment = fragmentManager.findFragmentById(R.id.list_container);
-            if (savedInstanceState != null) {
-                transaction.replace(R.id.details_container, EditFragment.newInstance(getNote()), EDIT_FRAGMENT_TAG);
-            } else {
-                transaction.replace(R.id.details_container, new EditFragment(), EDIT_FRAGMENT_TAG);
-            }
-            removeFragment(transaction, fragment);
-            transaction.commitAllowingStateLoss();
-        }
-    }
+//    public void addFragment(Bundle savedInstanceState) {
+//        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            fragmentManage = getSupportFragmentManager();
+//            transaction = fragmentManage.beginTransaction();
+//            Fragment fragment = fragmentManage.findFragmentById(R.id.list_container);
+//            if (savedInstanceState != null) {
+//                transaction.replace(R.id.details_container, EditFragment.newInstance(getNote()), EDIT_FRAGMENT_TAG);
+//            } else {
+//                transaction.replace(R.id.details_container, new EditFragment(), EDIT_FRAGMENT_TAG);
+//            }
+//            removeFragment(transaction, fragment);
+//            transaction.commitAllowingStateLoss();
+//        }
+//    }
 
     private void removeFragment(FragmentTransaction transaction, Fragment fragment) {
         if (fragment != null) {
@@ -182,21 +190,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //FIXME доработать добавление новых фрагментов
     private void addNewFragment(Fragment fragment, String tag) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        Fragment fragmentId = fragmentManager.findFragmentById(R.id.list_container);
-//        if (fragmentManager.findFragmentByTag(tag) != null) {
-        removeFragment(transaction, fragmentId);
-//        } else {
-        transaction.replace(R.id.list_container, fragment, tag);
-//            transaction.addToBackStack(null);
+        fragmentManage = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManage.beginTransaction();
+        List<Fragment> fragments = fragmentManage.getFragments();
+        if (fragmentManage.findFragmentByTag(tag) != null) {
+            for (int i = 0; i < fragments.size(); i++) {
+                String tagToEq = fragments.get(i).getTag();
+                if (tagToEq.equals(tag)) {
+                    backToFragment(fragments.get(i).getClass().getName());
+                    fragments.clear();
+                }
+            }
+        } else {
+            transaction.add(R.id.list_container, fragment, tag);
+            transaction.addToBackStack(fragment.getClass().getName());
+        }
         transaction.commitAllowingStateLoss();
-//        }
+    }
 
+    private void backToFragment(String fragment) {
+        // возвращаемся к тому, что было добавлено в backstack
+        getSupportFragmentManager().popBackStack(fragment, 0);
 
     }
+
 
 }
 

@@ -4,7 +4,15 @@
     <string name="city">City</string>
     <string name="description">Description</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_close">Open navigation close</string>
+    <string name="black">Черный</string>
+    <string name="white">Белый</string>
+    <string name="blue_light_number_one">Светло синий первый вариант</string>
+    <string name="blue_light_number_tow">Светло синий второй вариант</string>
+    <string name="blue_dark_number_one">Тёмно синий первый вариант</string>
+    <string name="blue_dark_number_tow">Тёмно синий второй вариант</string>
+    <string name="red">Красный</string>
+    <string name="green">Зеленый</string>
 
     <string-array name="cities">
         <item>Заметка Москва</item>
@@ -12,14 +20,6 @@
         <item>Заметка Екатеринбург</item>
         <item>Заметка Новосибирск</item>
         <item>Заметка Самара</item>
-    </string-array>
-
-    <string-array name="colors">
-        <item>Черный</item>
-        <item>Белый</item>
-        <item>Синий</item>
-        <item>Красный</item>
-        <item>Зеленый</item>
     </string-array>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -51,5 +51,6 @@
     <string name="drawer_header_text">Drawer Header</string>
     <string name="error">Error</string>
     <string name="retry">Retry</string>
+    <string name="add_new_note">Add new Note</string>
 
 </resources>

@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 ((MainFragmentViewHolderHeader) holder).bind();
                 break;
             default:
-                ((MainFragmentViewHolderNote) holder).bind(note.getTitle());
+                ((MainFragmentViewHolderNote) holder).bind(note.getTitle(),note.getDescription(),note.getColour());
         }
     }
 
@@ -90,12 +91,16 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     ///Region Holder
     class MainFragmentViewHolderNote extends RecyclerView.ViewHolder {
         private final TextView textView;
+        private final TextView textViewDescription;
+        private final CardView cardView;
         private Note note;
         private int position;
 
         public MainFragmentViewHolderNote(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.list_item_text_view);
+            textViewDescription = itemView.findViewById(R.id.description);
+            cardView = itemView.findViewById(R.id.card_view);
             itemView.setOnClickListener(v -> onClickItem.onClick(notes.get(getAdapterPosition()), getAdapterPosition()));
             itemView.findViewById(R.id.add_item).setOnClickListener(v -> addItem());
             itemView.findViewById(R.id.remove_item).setOnClickListener(v -> removeItem());
@@ -113,8 +118,10 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             notifyItemRemoved(getLayoutPosition());
         }
 
-        private void bind(String notes) {
+        private void bind(String notes,String description,int color) {
             textView.setText(notes);
+            textViewDescription.setText(description);
+            cardView.setBackgroundColor(color);
         }
 
         private void moveItemUp() {
