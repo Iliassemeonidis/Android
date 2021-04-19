@@ -60,7 +60,7 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 ((MainFragmentViewHolderHeader) holder).bind();
                 break;
             default:
-                ((MainFragmentViewHolderNote) holder).bind(note.getTitle(),note.getDescription(),note.getColour());
+                ((MainFragmentViewHolderNote) holder).bind(note.getTitle(), note.getDescription(), note.getColour());
         }
     }
 
@@ -118,7 +118,7 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             notifyItemRemoved(getLayoutPosition());
         }
 
-        private void bind(String notes,String description,int color) {
+        private void bind(String notes, String description, int color) {
             textView.setText(notes);
             textViewDescription.setText(description);
             cardView.setBackgroundColor(color);

@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -92,6 +91,7 @@ public class EditFragment extends Fragment {
                 if (credentialsAreValid(editTextTitle.getText().toString(), editTextDescription.getText().toString())) {
                     String title = editTextTitle.getText().toString();
                     String description = editTextDescription.getText().toString();
+                    int i = color;
                     Note params = new Note(title, description, color);
                     Intent result = new Intent();
                     result.putExtra(EXTRA_PARAMS, params);

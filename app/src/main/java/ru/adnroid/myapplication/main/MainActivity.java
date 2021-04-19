@@ -1,7 +1,6 @@
 package ru.adnroid.myapplication.main;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -28,7 +27,6 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.List;
 
-import ru.adnroid.myapplication.EditFragment;
 import ru.adnroid.myapplication.R;
 import ru.adnroid.myapplication.fragments.CalendarFragment;
 import ru.adnroid.myapplication.fragments.SettingsFragment;
@@ -130,23 +128,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (fragmentManage.getBackStackEntryCount() == 0) {
+        if (fragmentManage.getBackStackEntryCount() <= 1) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
 
             dialog.setTitle("Notification");
             dialog.setMessage("Do you want to leave the application?");
-            dialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    MainActivity.super.onBackPressed();
-                }
-            });
+            dialog.setPositiveButton("YES", (dialog1, which) -> finish());
             dialog.setNegativeButton("NO", null);
             dialog.create().show();
         } else {
             super.onBackPressed();
         }
-
     }
 
     @Override

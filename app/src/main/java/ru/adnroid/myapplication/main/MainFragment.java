@@ -18,9 +18,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.internal.NavigationMenu;
 
 import java.util.ArrayList;
 
@@ -32,6 +30,11 @@ import ru.adnroid.myapplication.utils.ViewUtils;
 import static ru.adnroid.myapplication.main.MainFragmentAdapter.HEADER_TYPE;
 
 public class MainFragment extends Fragment {
+/*
+    по ДЗ:
+            -установить проверку заполяняемости полей в EditFragment без Тоста
+            -Менять видимость меню в зависимости от открытого фрагмента
+            -использовать RadoiGroup и менять фон заметок в зависимости от выбора пользователя*/
 
     public static final String LIST = "LIST";
     private static final int REQUEST_CODE_EDIT = 42;
@@ -156,7 +159,7 @@ public class MainFragment extends Fragment {
     }
 
     private void addHeader() {
-        notes.add(0,new Note(HEADER_TYPE));
+        notes.add(0, new Note(HEADER_TYPE));
     }
 
     @Override
