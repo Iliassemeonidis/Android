@@ -2,6 +2,7 @@ package ru.adnroid.myapplication.main;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,8 +29,8 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.List;
 
 import ru.adnroid.myapplication.EditFragment;
-import ru.adnroid.myapplication.Note;
 import ru.adnroid.myapplication.R;
+import ru.adnroid.myapplication.fragments.CalendarFragment;
 import ru.adnroid.myapplication.fragments.SettingsFragment;
 import ru.adnroid.myapplication.fragments.ShoppingFragment;
 
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String SETTINGS_FRAGMENT_TAG = "SETTINGS_FRAGMENT_TAG";
     private static final String SHOPPING_FRAGMENT_TAG = "SHOPPING_FRAGMENT_TAG";
     public static final String EDIT_FRAGMENT_TAG = "EDIT_FRAGMENT_TAG";
+    public static final String CALENDAR_FRAGMENT_TAG = "CALENDAR_FRAGMENT_TAG";
 
     private FragmentManager fragmentManage;
 
@@ -51,19 +54,19 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
-                case R.id.add_item:
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    FragmentTransaction transaction = fragmentManager.beginTransaction();
-                    EditFragment editFragment = EditFragment.newInstance(new Note());
-
-                    editFragment.setTargetFragment(editFragment, REQUEST_CODE);
-                    transaction.replace(R.id.list_container, editFragment, EDIT_FRAGMENT_TAG);
-                    transaction.addToBackStack(null);
-                    transaction.commitAllowingStateLoss();
+                case R.id.calendar:
+                    addNewFragment(new CalendarFragment(), CALENDAR_FRAGMENT_TAG);
                     break;
-                case R.id.clear:
-                    // бла бла бла
-
+                case R.id.mail:
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("text/plain");
+                    intent.putExtra(Intent.EXTRA_EMAIL, "emailaddress@emailaddress.com");
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
+                    intent.putExtra(Intent.EXTRA_TEXT, "Какая-то заметка");
+                    startActivity(Intent.createChooser(intent, "Заметка"));
+                    break;
+                case R.id.info:
+                    Toast.makeText(this, "Нет идей, что добавить еще", Toast.LENGTH_SHORT).show();
                     break;
             }
 
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_bottom_navigation, menu);
+        inflater.inflate(R.menu.main_options_menu, menu);
 
         MenuItem menuItem = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) menuItem.getActionView();
@@ -183,6 +186,15 @@ public class MainActivity extends AppCompatActivity {
 //            transaction.commitAllowingStateLoss();
 //        }
 //    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+           // дописасть передачу данных
+        }
+    }
 
     private void removeFragment(FragmentTransaction transaction, Fragment fragment) {
         if (fragment != null) {

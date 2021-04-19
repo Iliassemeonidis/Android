@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:labelVisibilityMode="selected"
-            app:menu="@menu/main_bottom_navigation" />
+            app:menu="@menu/main_navigation_bottom" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView
