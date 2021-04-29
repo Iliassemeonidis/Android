@@ -1,12 +1,11 @@
 package ru.adnroid.myapplication.fragments;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,13 +13,14 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
+import java.util.Objects;
+
 import ru.adnroid.myapplication.R;
 
 public class SettingsFragment extends Fragment {
 
-    public static final String APP_PREFERENCES = "mysettings";
+    public static final String APP_PREFERENCES_KEY = "MY_SETTINGS";
     public static final String APP_PREFERENCES_THEME = "THEME";
-    SharedPreferences mSettings;
 
     @Nullable
     @Override
@@ -35,19 +35,24 @@ public class SettingsFragment extends Fragment {
     }
 
     private void initSwitch(@NonNull View view) {
-
+        SharedPreferences mSettings = Objects.requireNonNull(getContext()).getSharedPreferences(APP_PREFERENCES_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mSettings.edit();
         SwitchCompat theme = view.findViewById(R.id.theme_switch);
-        theme.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // TODO реализовать сохранение настроек в
-                if (!isChecked) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                }
+        theme.setChecked(isBlackThem());
+
+        theme.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (!isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             }
+            editor.putBoolean(APP_PREFERENCES_THEME, isChecked);
+            editor.apply();
         });
     }
 
+    private boolean isBlackThem() {
+        SharedPreferences preferences = Objects.requireNonNull(getContext()).getSharedPreferences(APP_PREFERENCES_KEY, Context.MODE_PRIVATE);
+        return preferences.getBoolean(APP_PREFERENCES_THEME, false);
+    }
 }

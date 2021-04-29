@@ -2,7 +2,9 @@ package ru.adnroid.myapplication.main;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -21,12 +24,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import ru.adnroid.myapplication.EditFragment;
 import ru.adnroid.myapplication.Note;
 import ru.adnroid.myapplication.R;
 import ru.adnroid.myapplication.utils.ViewUtils;
 
+import static ru.adnroid.myapplication.fragments.SettingsFragment.APP_PREFERENCES_KEY;
+import static ru.adnroid.myapplication.fragments.SettingsFragment.APP_PREFERENCES_THEME;
 import static ru.adnroid.myapplication.main.MainFragmentAdapter.HEADER_TYPE;
 
 public class MainFragment extends Fragment {
@@ -48,6 +54,7 @@ public class MainFragment extends Fragment {
             EditFragment editFragment = EditFragment.newInstance(note);
             editFragment.setTargetFragment(MainFragment.this, REQUEST_CODE_EDIT);
             removePosition = position;
+            // TODO разобраться с бодавление фрагментов
             if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
                 transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
             } else {
@@ -72,6 +79,7 @@ public class MainFragment extends Fragment {
         bundle = new Bundle();
         createList(view, savedInstanceState);
         setHasOptionsMenu(true);
+        setAppTheme();
         FloatingActionButton actionButton = view.findViewById(R.id.floating_action_button);
         actionButton.setOnClickListener(v -> {
             if (notes.isEmpty()) {
@@ -79,6 +87,16 @@ public class MainFragment extends Fragment {
             }
             adapter.appendItem();
         });
+    }
+
+    private void setAppTheme() {
+        SharedPreferences mSettings = Objects.requireNonNull(getContext()).getSharedPreferences(APP_PREFERENCES_KEY, Context.MODE_PRIVATE);
+        boolean isChecked = mSettings.getBoolean(APP_PREFERENCES_THEME, false);
+        if (!isChecked) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
     }
 
     @SuppressLint("NonConstantResourceId")

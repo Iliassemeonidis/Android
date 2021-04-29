@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -124,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (fragmentManage.getBackStackEntryCount() <= 1) {
+        if (fragmentManage.getBackStackEntryCount() <= 1 && fragmentManage!=null) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
 
             dialog.setTitle("Notification");
@@ -163,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
 //    public void addFragment(Bundle savedInstanceState) {
 //        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 //            fragmentManage = getSupportFragmentManager();
@@ -186,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // TODO разобраться с бодавление фрагментов
     private void addNewFragment(Fragment fragment, String tag) {
         fragmentManage = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManage.beginTransaction();
@@ -209,6 +208,5 @@ public class MainActivity extends AppCompatActivity {
         // возвращаемся к тому, что было добавлено в backstack
         getSupportFragmentManager().popBackStack(fragment, 0);
     }
-
 }
 
