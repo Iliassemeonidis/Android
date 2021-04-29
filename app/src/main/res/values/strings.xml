@@ -54,4 +54,8 @@
     <string name="error">Error</string>
     <string name="retry">Retry</string>
     <string name="add_new_note">Add new Note</string>
+    <string name="not_name">Необходимо заполнить заголовк</string>
+    <string name="not_name_description">Необходимо заполнить писание заметки</string>
+    <string name="black_theme">Black theme</string>
+    <string name="white_theme">White theme</string>
 </resources>

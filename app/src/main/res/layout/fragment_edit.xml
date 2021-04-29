@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="?attr/actionBarSize"
-    android:background="@color/beige"
     android:orientation="vertical"
     tools:context=".EditFragment">
 
@@ -13,6 +12,7 @@
         android:id="@+id/textField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:errorEnabled="true"
         android:hint="@string/title_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,9 +20,9 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/title_edit_text"
+            style="@style/MyEditTextStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/MyEditTextStyle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -32,6 +32,7 @@
         android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textField" >
@@ -57,18 +58,21 @@
         app:layout_constraintTop_toBottomOf="@+id/description">
 
         <RadioButton
+            android:id="@+id/red"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/rounded_button_red" />
 
         <RadioButton
+            android:id="@+id/yellow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/rounded_button_yellow" />
 
         <RadioButton
+            android:id="@+id/green"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

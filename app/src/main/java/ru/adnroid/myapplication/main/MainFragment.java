@@ -30,11 +30,6 @@ import ru.adnroid.myapplication.utils.ViewUtils;
 import static ru.adnroid.myapplication.main.MainFragmentAdapter.HEADER_TYPE;
 
 public class MainFragment extends Fragment {
-/*
-    по ДЗ:
-            -установить проверку заполяняемости полей в EditFragment без Тоста
-            -Менять видимость меню в зависимости от открытого фрагмента
-            -использовать RadoiGroup и менять фон заметок в зависимости от выбора пользователя*/
 
     public static final String LIST = "LIST";
     private static final int REQUEST_CODE_EDIT = 42;
@@ -123,12 +118,13 @@ public class MainFragment extends Fragment {
             if (notes.isEmpty() || notes.size() <= 1) {
                 addHeader();
             }
-//            notes.remove(removePosition);
+            if (notes.size() > 1) {
+                notes.remove(removePosition);
+            }
             if (data != null) {
                 notes.add(1, data.getParcelableExtra(EXTRA_PARAMS));
                 adapter.setNewList(notes);
             }
-
         }
     }
 
@@ -142,7 +138,7 @@ public class MainFragment extends Fragment {
                 addHeader();
                 for (int i = 0; i < cities.length; i++) {
                     String title = cities[i];
-                    Note note = new Note(title, "Описание", R.color.green);
+                    Note note = new Note(title, "Описание", R.color.white);
                     if (i % 2 == 0) {
                         note.setType(MainFragmentAdapter.NOTE_TYPE);
                     } else {

@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import ru.adnroid.myapplication.Note;
 import ru.adnroid.myapplication.R;
 import ru.adnroid.myapplication.main.MainFragment.onClickItem;
-
 public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int NOTE_TYPE = 0;
@@ -121,7 +121,11 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void bind(String notes, String description, int color) {
             textView.setText(notes);
             textViewDescription.setText(description);
-            cardView.setBackgroundColor(color);
+            if (color == 0) {
+                color = R.color.white;
+            }
+            cardView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), color));
+
         }
 
         private void moveItemUp() {
