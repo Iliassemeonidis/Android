@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import ru.adnroid.myapplication.Note;
 import ru.adnroid.myapplication.R;
 import ru.adnroid.myapplication.main.MainFragment.onClickItem;
+
 public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final int NOTE_TYPE = 0;

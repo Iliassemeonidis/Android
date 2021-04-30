@@ -31,14 +31,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String SETTINGS_FRAGMENT_TAG = "SETTINGS_FRAGMENT_TAG";
     private static final String SHOPPING_FRAGMENT_TAG = "SHOPPING_FRAGMENT_TAG";
     private static final String EDIT_FRAGMENT_TAG = "EDIT_FRAGMENT_TAG";
+
     private MenuItem menuItemSearch;
     private MenuItem menuItemAdd;
     private MenuItem menuItemClear;
-    private FragmentManager fragmentManage;
 
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -123,7 +124,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (fragmentManage.getBackStackEntryCount() <= 1 && fragmentManage!=null) {
+        //FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() <= 1 && fragmentManager !=null) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
 
             dialog.setTitle("Notification");
@@ -186,10 +188,10 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO разобраться с бодавление фрагментов
     private void addNewFragment(Fragment fragment, String tag) {
-        fragmentManage = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManage.beginTransaction();
-        List<Fragment> fragments = fragmentManage.getFragments();
-        if (fragmentManage.findFragmentByTag(tag) != null) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        List<Fragment> fragments = fragmentManager.getFragments();
+        if (fragmentManager.findFragmentByTag(tag) != null) {
             for (int i = 0; i < fragments.size(); i++) {
                 String tagToEq = fragments.get(i).getTag();
                 if (tagToEq.equals(tag)) {

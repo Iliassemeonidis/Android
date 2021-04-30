@@ -31,27 +31,26 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initSwitch(view);
+        initThemeSwitch(view);
     }
 
-    private void initSwitch(@NonNull View view) {
-        SharedPreferences mSettings = Objects.requireNonNull(getContext()).getSharedPreferences(APP_PREFERENCES_KEY, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = mSettings.edit();
+    private void initThemeSwitch(@NonNull View view) {
         SwitchCompat theme = view.findViewById(R.id.theme_switch);
-        theme.setChecked(isBlackThem());
-
+        theme.setChecked(isBlackTheme());
         theme.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (!isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            } else {
+            if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             }
-            editor.putBoolean(APP_PREFERENCES_THEME, isChecked);
+            SharedPreferences settings = requireContext().getSharedPreferences(APP_PREFERENCES_KEY, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putBoolean(APP_PREFERENCES_THEME, !isChecked);
             editor.apply();
         });
     }
 
-    private boolean isBlackThem() {
+    private boolean isBlackTheme() {
         SharedPreferences preferences = Objects.requireNonNull(getContext()).getSharedPreferences(APP_PREFERENCES_KEY, Context.MODE_PRIVATE);
         return preferences.getBoolean(APP_PREFERENCES_THEME, false);
     }

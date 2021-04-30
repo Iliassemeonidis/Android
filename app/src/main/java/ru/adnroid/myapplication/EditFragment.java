@@ -9,18 +9,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import static ru.adnroid.myapplication.main.MainFragment.EXTRA_PARAMS;
 
@@ -29,10 +27,14 @@ public class EditFragment extends Fragment {
     public static final int REQUEST_CODE_ADD = 42;
     public static final String NOTE_KEY = "NOTE_KEY";
     private static final String NOTE_BUNDLE_EXTRA = "NOTE_BUNDLE_EXTRA";
+
     private Note noteParams;
     private int color;
-    private String title;
-    private String description;
+    private TextInputEditText editTextTitle;
+    private TextInputLayout textInputLayoutTitle;
+    private TextInputEditText editTextDescription;
+    private TextInputLayout textInputLayoutDescription;
+    private RadioGroup radioGroup;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,28 +64,15 @@ public class EditFragment extends Fragment {
 //        MenuItem bottomNavigationView2 = menu.findItem(R.id.saved_notes).setVisible(false);
     }
 
-
-    public static EditFragment newInstance(Note param1) {
-        EditFragment fragment = new EditFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(NOTE_BUNDLE_EXTRA, param1);
-        fragment.setArguments(args);
-        return fragment;
+    private void initView(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        setNoteParams(savedInstanceState);
+        initEditTexts(view);
+        initColorSelection(view);
+        initButtonSave(view);
     }
 
-    private void initView(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            noteParams = savedInstanceState.getParcelable(NOTE_KEY);
-        } else if (getArguments() != null) {
-            noteParams = getArguments().getParcelable(NOTE_BUNDLE_EXTRA);
-        } else {
-            noteParams = new Note("", "", 0);
-        }
-        EditText editTextTitle = view.findViewById(R.id.title_edit_text);
-        EditText editTextDescription = view.findViewById(R.id.description_edit_text);
-        RadioGroup radioGroup = view.findViewById(R.id.spinner_colors);
-        editTextTitle.setText(noteParams.getTitle());
-        editTextDescription.setText(noteParams.getDescription());
+    private void initColorSelection(@NonNull View view) {
+        radioGroup = view.findViewById(R.id.spinner_colors);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @SuppressLint("NonConstantResourceId")
             @Override
@@ -104,56 +93,54 @@ public class EditFragment extends Fragment {
                 }
             }
         });
-        initButtonSave(view, editTextTitle, editTextDescription);
     }
 
-    private void initButtonSave(@NonNull View view, EditText editTextTitle, EditText editTextDescription) {
-        Button buttonSave = view.findViewById(R.id.button_save);
-        buttonSave.setOnClickListener(v -> {
+    private void initEditTexts(@NonNull View view) {
+        editTextTitle = view.findViewById(R.id.title_edit_text);
+        editTextTitle.setText(noteParams.getTitle());
+        textInputLayoutTitle = view.findViewById(R.id.edit_fragment_title_til);
+        editTextDescription = view.findViewById(R.id.description_edit_text);
+        editTextDescription.setText(noteParams.getDescription());
+    }
+
+    private void setNoteParams(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            noteParams = savedInstanceState.getParcelable(NOTE_KEY);
+        } else if (getArguments() != null) {
+            noteParams = getArguments().getParcelable(NOTE_BUNDLE_EXTRA);
+        } else {
+            noteParams = new Note("", "", 0);
+        }
+    }
+
+    private void initButtonSave(@NonNull View view) {
+        view.findViewById(R.id.button_save).setOnClickListener(v -> onButtonSaveClick());
+    }
+
+    private void onButtonSaveClick() {
+        String title = editTextTitle.getText().toString();
+        String description = editTextDescription.getText().toString();
+        if (credentialsAreValid(title, description)) {
             FragmentActivity fragmentActivity = getActivity();
             if (fragmentActivity != null) {
-                title = editTextTitle.getText().toString();
-                editTextTitle.setOnFocusChangeListener((v12, hasFocus) -> {
-                    if (hasFocus) return;
-                    TextView tv = (TextView) v12;
-                    String value = tv.getText().toString();
-                    if (credentialsAreValid(value)) {
-                        tv.setError(null);
-                        title = editTextTitle.getText().toString();
-                    } else {
-                        tv.setError(getString(R.string.not_name));
-                    }
-                });
-                description = editTextDescription.getText().toString();
-                editTextDescription.setOnFocusChangeListener((v1, hasFocus) -> {
-                    if (hasFocus) return;
-                    TextView tv = (TextView) v1;
-                    String value = tv.getText().toString();
-                    if (credentialsAreValid(value)) {
-                        tv.setError(null);
-                        description = editTextDescription.getText().toString();
-                    } else {
-                        tv.setError(getString(R.string.not_name_description));
-                    }
-
-                });
-
-                if (!title.isEmpty() && !description.isEmpty()) {
-                    Note params = new Note(title, description, color);
-                    Intent result = new Intent();
-                    result.putExtra(EXTRA_PARAMS, params);
-
-                    Fragment targetFragment = getTargetFragment();
-                    if (targetFragment != null) {
-                        targetFragment.onActivityResult(REQUEST_CODE_ADD, Activity.RESULT_OK, result);
-                        fragmentActivity.getSupportFragmentManager().popBackStack();
-                    }
-                }
+                saveNote(title, description, fragmentActivity);
             }
-        });
+        }
     }
 
-    private boolean credentialsAreValid(String title) {
+    private void saveNote(String title, String description, FragmentActivity fragmentActivity) {
+        Note params = new Note(title, description, color);
+        Intent result = new Intent();
+        result.putExtra(EXTRA_PARAMS, params);
+
+        Fragment targetFragment = getTargetFragment();
+        if (targetFragment != null) {
+            targetFragment.onActivityResult(REQUEST_CODE_ADD, Activity.RESULT_OK, result);
+            fragmentActivity.getSupportFragmentManager().popBackStack();
+        }
+    }
+
+    private boolean checkString(String title) {
         int errorCount = 0;
         if (title.isEmpty()) {
             errorCount++;
@@ -161,5 +148,34 @@ public class EditFragment extends Fragment {
             errorCount++;
         }
         return errorCount == 0;
+    }
+
+    private boolean credentialsAreValid(String title, String password) {
+        int errorCount = 0;
+        if (!checkString(title)) {
+            textInputLayoutTitle.setErrorEnabled(true);
+            textInputLayoutTitle.setError(title.isEmpty() ? "Empty" : "Incorrect");
+            errorCount++;
+        } else {
+            textInputLayoutTitle.setErrorEnabled(false);
+        }
+        /*if (!BuildConfig.BUILD_TYPE.equals(Constants.DEBUG) && !BuildConfig.BUILD_TYPE.equals(Constants.RELEASE)) {
+            if (checkString(password)) {
+                passwordInputLayout.setErrorEnabled(true);
+                passwordInputLayout.setError(ValidationUtils.getError(this, password));
+                errorCount++;
+            } else {
+                passwordInputLayout.setErrorEnabled(false);
+            }
+        }*/
+        return errorCount == 0;
+    }
+
+    public static EditFragment newInstance(Note param1) {
+        EditFragment fragment = new EditFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(NOTE_BUNDLE_EXTRA, param1);
+        fragment.setArguments(args);
+        return fragment;
     }
 }

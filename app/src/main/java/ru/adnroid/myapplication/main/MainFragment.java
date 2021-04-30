@@ -35,6 +35,19 @@ import static ru.adnroid.myapplication.fragments.SettingsFragment.APP_PREFERENCE
 import static ru.adnroid.myapplication.fragments.SettingsFragment.APP_PREFERENCES_THEME;
 import static ru.adnroid.myapplication.main.MainFragmentAdapter.HEADER_TYPE;
 
+/*-прочитать методичку (до конца). Там и про EditText, и про все остальное написано+
+-установить проверку заполяняемости полей в EditFragment без Тоста+
+-использовать RadoiGroup и менять фон заметок в зависимости от выбора пользователя.
+ Тут все гораздо проще, так как ты сохраняешь и передаешь не цвет,
+ а ссылку на цвет в виде числового значения, то цвет нужно искать по ссылке.
+ То есть вот так cardView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), color));+
+-убрать меню NavigationView и переместить все его действия в BottomNavigationView+
+-Менять видимость меню в зависимости от открытого фрагмента+
+-создать светлую и темную тему для своего приложения +
+-на экране Настройки добавить чекбокс для выбора светлой или тесной темы+
+- Помещаем и достаем все изменения из SharedPreferences+
+-поменять цвет кнопок для передвижения заметок на черный+*/
+
 public class MainFragment extends Fragment {
 
     public static final String LIST = "LIST";
