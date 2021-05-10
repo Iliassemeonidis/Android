@@ -5,16 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="?attr/actionBarSize"
-    android:orientation="vertical"
     android:background="@color/beige"
+    android:orientation="vertical"
     tools:context=".EditFragment">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edit_fragment_title_til"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:errorEnabled="true"
         android:hint="@string/title_text"
+        app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -33,20 +33,20 @@
         android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="@string/description_text"
         app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_fragment_title_til" >
+        app:layout_constraintTop_toBottomOf="@+id/edit_fragment_title_til">
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/description_edit_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/description_text"
-        style="@style/MyEditTextStyle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_fragment_title_til" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/description_edit_text"
+            style="@style/MyEditTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_fragment_title_til" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <RadioGroup

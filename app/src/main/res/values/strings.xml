@@ -59,4 +59,7 @@
     <string name="black_theme">Black theme</string>
     <string name="white_theme">White theme</string>
     <string name="checkbox">checkbox</string>
+    <string name="incorrect">Incorrect</string>
+    <string name="error_title">"Заголвок не должен быть пустым"</string>
+    <string name="error_description">"Заполните описание заметки"</string>
 </resources>

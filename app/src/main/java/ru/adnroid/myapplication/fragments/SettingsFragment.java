@@ -34,20 +34,28 @@ public class SettingsFragment extends Fragment {
         initThemeSwitch(view);
     }
 
+    // TODO После смены темы становятся видимы bottomNavigationView и ItemMenu необходимо их скрыть
     private void initThemeSwitch(@NonNull View view) {
         SwitchCompat theme = view.findViewById(R.id.theme_switch);
+        // Получаем из префов true или false для установки Switch в правильное состояние
         theme.setChecked(isBlackTheme());
         theme.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
+                // решение взято из официального источника, раздел "Change themes in-app")))
+                //https://developer.android.com/guide/topics/ui/look-and-feel/darktheme#:~:text=Dark%20theme%20applies%20to%20both,Theme)
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             }
-            SharedPreferences settings = requireContext().getSharedPreferences(APP_PREFERENCES_KEY, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putBoolean(APP_PREFERENCES_THEME, !isChecked);
-            editor.apply();
+            saveThemeInSharePref(isChecked);
         });
+    }
+
+    private void saveThemeInSharePref(boolean isChecked) {
+        SharedPreferences settings = requireContext().getSharedPreferences(APP_PREFERENCES_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean(APP_PREFERENCES_THEME, isChecked);
+        editor.apply();
     }
 
     private boolean isBlackTheme() {

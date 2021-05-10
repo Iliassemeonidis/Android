@@ -3,6 +3,13 @@ package ru.adnroid.myapplication;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.IgnoreExtraProperties;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@IgnoreExtraProperties
 public class Note implements Parcelable {
 
     private int type;
@@ -68,6 +75,18 @@ public class Note implements Parcelable {
         this.date = date;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setColour(int colour) {
+        this.colour = colour;
+    }
+
     // Описывает контент и возвращает некторое числовое значение
     @Override
     public int describeContents() {
@@ -80,6 +99,17 @@ public class Note implements Parcelable {
         dest.writeString(title);
         dest.writeString(description);
         dest.writeInt(colour);
+    }
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("type", type);
+        result.put("date", date);
+        result.put("title", title);
+        result.put("description", description);
+        result.put("colour", colour);
+        return result;
     }
 
 }

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,8 +23,15 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import ru.adnroid.myapplication.EditFragment;
@@ -35,19 +43,6 @@ import static ru.adnroid.myapplication.fragments.SettingsFragment.APP_PREFERENCE
 import static ru.adnroid.myapplication.fragments.SettingsFragment.APP_PREFERENCES_THEME;
 import static ru.adnroid.myapplication.main.MainFragmentAdapter.HEADER_TYPE;
 
-/*-прочитать методичку (до конца). Там и про EditText, и про все остальное написано+
--установить проверку заполяняемости полей в EditFragment без Тоста+
--использовать RadoiGroup и менять фон заметок в зависимости от выбора пользователя.
- Тут все гораздо проще, так как ты сохраняешь и передаешь не цвет,
- а ссылку на цвет в виде числового значения, то цвет нужно искать по ссылке.
- То есть вот так cardView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), color));+
--убрать меню NavigationView и переместить все его действия в BottomNavigationView+
--Менять видимость меню в зависимости от открытого фрагмента+
--создать светлую и темную тему для своего приложения +
--на экране Настройки добавить чекбокс для выбора светлой или тесной темы+
-- Помещаем и достаем все изменения из SharedPreferences+
--поменять цвет кнопок для передвижения заметок на черный+*/
-
 public class MainFragment extends Fragment {
 
     public static final String LIST = "LIST";
@@ -58,6 +53,7 @@ public class MainFragment extends Fragment {
     private MainFragmentAdapter adapter;
     private ArrayList<Note> notes;
     private int removePosition;
+    private DatabaseReference reference;
 
     private final onClickItem onClickItem = new onClickItem() {
         @Override
@@ -67,7 +63,8 @@ public class MainFragment extends Fragment {
             EditFragment editFragment = EditFragment.newInstance(note);
             editFragment.setTargetFragment(MainFragment.this, REQUEST_CODE_EDIT);
             removePosition = position;
-            // TODO разобраться с бодавление фрагментов
+
+            // TODO разобраться с додавление фрагментов
             if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
                 transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
             } else {
@@ -90,6 +87,10 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         bundle = new Bundle();
+
+        // Write a message to the database
+        reference = FirebaseDatabase.getInstance().getReference("message");
+
         createList(view, savedInstanceState);
         setHasOptionsMenu(true);
         setAppTheme();
@@ -167,22 +168,46 @@ public class MainFragment extends Fragment {
             if (notes == null) {
                 notes = new ArrayList<>();
                 addHeader();
-                for (int i = 0; i < cities.length; i++) {
-                    String title = cities[i];
-                    Note note = new Note(title, "Описание", R.color.white);
-                    if (i % 2 == 0) {
-                        note.setType(MainFragmentAdapter.NOTE_TYPE);
-                    } else {
-                        note.setType(MainFragmentAdapter.REMINDER_TYPE);
-                        note.setDate("March " + i);
+//                readNotesFromData();
+                    for (int i = 0; i < cities.length; i++) {
+                        String title = cities[i];
+                        Note note = new Note(title, "Описание", R.color.white);
+                        if (i % 2 == 0) {
+                            note.setType(MainFragmentAdapter.NOTE_TYPE);
+                        } else {
+                            note.setType(MainFragmentAdapter.REMINDER_TYPE);
+                            note.setDate("March " + i);
+                        }
+                        notes.add(note);
                     }
-                    notes.add(note);
-                }
+                    // тут записываем даные в дб
+                //writeNotesInData(notes);
             }
         }
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         adapter = new MainFragmentAdapter(notes, onClickItem);
         recyclerView.setAdapter(adapter);
+    }
+
+    private void writeNotesInData(List<Note> notes) {
+        reference.push().setValue(notes);
+    }
+
+    //TODO реализовать метод чтения данных из бд
+    private void readNotesFromData() {
+//        reference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                GenericTypeIndicator<ArrayList<Note>> arrayListNotes = new GenericTypeIndicator<ArrayList<Note>>() {
+//                };
+//                notes = snapshot.getValue(arrayListNotes);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                Log.w("DATA", "Failed to read value.", error.toException());
+//            }
+//        });
     }
 
     private void addHeader() {

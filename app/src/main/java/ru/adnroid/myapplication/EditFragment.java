@@ -4,9 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
@@ -20,6 +20,8 @@ import androidx.fragment.app.FragmentActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import ru.adnroid.myapplication.main.MainActivity;
+
 import static ru.adnroid.myapplication.main.MainFragment.EXTRA_PARAMS;
 
 public class EditFragment extends Fragment {
@@ -30,11 +32,18 @@ public class EditFragment extends Fragment {
 
     private Note noteParams;
     private int color;
-    private TextInputEditText editTextTitle;
     private TextInputLayout textInputLayoutTitle;
-    private TextInputEditText editTextDescription;
+    private TextInputEditText editTextTitle;
     private TextInputLayout textInputLayoutDescription;
-    private RadioGroup radioGroup;
+    private TextInputEditText editTextDescription;
+
+    public static EditFragment newInstance(Note param1) {
+        EditFragment fragment = new EditFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(NOTE_BUNDLE_EXTRA, param1);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,6 +53,7 @@ public class EditFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        MainActivity.setVisibilityInNavigation(false);
         initView(view, savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -56,12 +66,9 @@ public class EditFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
-        MenuItem menuItemAdd = menu.findItem(R.id.add_item).setVisible(false);
-        MenuItem menuItemClear = menu.findItem(R.id.clear).setVisible(false);
-        MenuItem menuItemSearch = menu.findItem(R.id.search).setVisible(false);
-//        MenuItem bottomNavigationView = menu.findItem(R.id.settings).setVisible(false);
-//        MenuItem bottomNavigationView1 = menu.findItem(R.id.shopping).setVisible(false);
-//        MenuItem bottomNavigationView2 = menu.findItem(R.id.saved_notes).setVisible(false);
+        menu.findItem(R.id.add_item).setVisible(false);
+        menu.findItem(R.id.clear).setVisible(false);
+        menu.findItem(R.id.search).setVisible(false);
     }
 
     private void initView(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -71,26 +78,21 @@ public class EditFragment extends Fragment {
         initButtonSave(view);
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void initColorSelection(@NonNull View view) {
-        radioGroup = view.findViewById(R.id.spinner_colors);
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @SuppressLint("NonConstantResourceId")
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                // Такое решение использовал по причине инкрементации переменной checkedId,
-                // вероятно проблема в добавлении фрагментов, пока, что не разобрался в этом.
-                RadioButton button = group.findViewById(checkedId);
-                switch (button.getId()) {
-                    case R.id.red:
-                        color = R.color.red;
-                        break;
-                    case R.id.yellow:
-                        color = R.color.yellow;
-                        break;
-                    case R.id.green:
-                        color = R.color.green;
-                        break;
-                }
+        RadioGroup radioGroup = view.findViewById(R.id.spinner_colors);
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            RadioButton button = group.findViewById(checkedId);
+            switch (button.getId()) {
+                case R.id.red:
+                    color = R.color.red;
+                    break;
+                case R.id.yellow:
+                    color = R.color.yellow;
+                    break;
+                case R.id.green:
+                    color = R.color.green;
+                    break;
             }
         });
     }
@@ -99,6 +101,7 @@ public class EditFragment extends Fragment {
         editTextTitle = view.findViewById(R.id.title_edit_text);
         editTextTitle.setText(noteParams.getTitle());
         textInputLayoutTitle = view.findViewById(R.id.edit_fragment_title_til);
+        textInputLayoutDescription = view.findViewById(R.id.description);
         editTextDescription = view.findViewById(R.id.description_edit_text);
         editTextDescription.setText(noteParams.getDescription());
     }
@@ -124,6 +127,7 @@ public class EditFragment extends Fragment {
             FragmentActivity fragmentActivity = getActivity();
             if (fragmentActivity != null) {
                 saveNote(title, description, fragmentActivity);
+                MainActivity.setVisibilityInNavigation(true);
             }
         }
     }
@@ -133,11 +137,21 @@ public class EditFragment extends Fragment {
         Intent result = new Intent();
         result.putExtra(EXTRA_PARAMS, params);
 
+        checkTargetIsNull(fragmentActivity, result);
+    }
+
+    private void checkTargetIsNull(FragmentActivity fragmentActivity, Intent result) {
         Fragment targetFragment = getTargetFragment();
         if (targetFragment != null) {
-            targetFragment.onActivityResult(REQUEST_CODE_ADD, Activity.RESULT_OK, result);
-            fragmentActivity.getSupportFragmentManager().popBackStack();
+            sendActivityResult(fragmentActivity, result, targetFragment);
+        } else {
+            Log.i("NULL", "TargetFragment is null");
         }
+    }
+
+    private void sendActivityResult(FragmentActivity fragmentActivity, Intent result, Fragment targetFragment) {
+        targetFragment.onActivityResult(REQUEST_CODE_ADD, Activity.RESULT_OK, result);
+        fragmentActivity.getSupportFragmentManager().popBackStack();
     }
 
     private boolean checkString(String title) {
@@ -147,35 +161,25 @@ public class EditFragment extends Fragment {
         } else if (!title.matches(".*\\w.*")) {
             errorCount++;
         }
-        return errorCount == 0;
+        return errorCount != 0;
     }
 
-    private boolean credentialsAreValid(String title, String password) {
+    private boolean credentialsAreValid(String title, String description) {
         int errorCount = 0;
-        if (!checkString(title)) {
+        if (checkString(title)) {
             textInputLayoutTitle.setErrorEnabled(true);
-            textInputLayoutTitle.setError(title.isEmpty() ? "Empty" : "Incorrect");
+            textInputLayoutTitle.setError(title.isEmpty() ? getString(R.string.error_title) : getString(R.string.incorrect));
             errorCount++;
         } else {
             textInputLayoutTitle.setErrorEnabled(false);
         }
-        /*if (!BuildConfig.BUILD_TYPE.equals(Constants.DEBUG) && !BuildConfig.BUILD_TYPE.equals(Constants.RELEASE)) {
-            if (checkString(password)) {
-                passwordInputLayout.setErrorEnabled(true);
-                passwordInputLayout.setError(ValidationUtils.getError(this, password));
-                errorCount++;
-            } else {
-                passwordInputLayout.setErrorEnabled(false);
-            }
-        }*/
+        if (checkString(description)) {
+            textInputLayoutDescription.setErrorEnabled(true);
+            textInputLayoutDescription.setError(description.isEmpty() ? getString(R.string.error_description) : getString(R.string.incorrect));
+            errorCount++;
+        } else {
+            textInputLayoutDescription.setErrorEnabled(false);
+        }
         return errorCount == 0;
-    }
-
-    public static EditFragment newInstance(Note param1) {
-        EditFragment fragment = new EditFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(NOTE_BUNDLE_EXTRA, param1);
-        fragment.setArguments(args);
-        return fragment;
     }
 }
