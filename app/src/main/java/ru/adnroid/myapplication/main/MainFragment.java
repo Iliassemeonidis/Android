@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,15 +22,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import ru.adnroid.myapplication.EditFragment;
@@ -49,11 +41,13 @@ public class MainFragment extends Fragment {
     private static final int REQUEST_CODE_EDIT = 42;
     public static final String EDIT_FRAGMENT_TAG = "EDIT_FRAGMENT_TAG";
     public static final String EXTRA_PARAMS = "EXTRA_PARAMS";
+    private static final int LIST_ONLY_WITH_HEADER = 1;
     private static Bundle bundle;
     private MainFragmentAdapter adapter;
     private ArrayList<Note> notes;
     private int removePosition;
-    private DatabaseReference reference;
+    private CardsSource data;
+    //private DatabaseReference reference;
 
     private final onClickItem onClickItem = new onClickItem() {
         @Override
@@ -88,19 +82,24 @@ public class MainFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         bundle = new Bundle();
 
-        // Write a message to the database
+        /*// Write a message to the database
         reference = FirebaseDatabase.getInstance().getReference("message");
+*/
+
 
         createList(view, savedInstanceState);
         setHasOptionsMenu(true);
         setAppTheme();
         FloatingActionButton actionButton = view.findViewById(R.id.floating_action_button);
         actionButton.setOnClickListener(v -> {
-            if (notes.isEmpty()) {
+            /*if (notes.isEmpty()) {
                 addHeader();
-            }
+            }*/
             adapter.appendItem();
+            data.addCardData(new Note("New Note", 0, "New Note", "Desc", "asdf", 1));
         });
+
+        data = new CardsSourceFirebaseImpl().init(cardsData -> adapter.setNewList(cardsData.getNotes()));
     }
 
     private void setAppTheme() {
@@ -122,7 +121,7 @@ public class MainFragment extends Fragment {
                 if (context != null) {
                     FragmentManager fragmentManager = context.getSupportFragmentManager();
                     FragmentTransaction transaction = fragmentManager.beginTransaction();
-                    EditFragment editFragment = EditFragment.newInstance(new Note());
+                    EditFragment editFragment = EditFragment.newInstance(new Note("1", HEADER_TYPE, "", "", "", 1));
                     editFragment.setTargetFragment(this, REQUEST_CODE_EDIT);
 
                     if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
@@ -147,15 +146,16 @@ public class MainFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            if (notes.isEmpty() || notes.size() <= 1) {
+            if (notes.isEmpty() || notes.size() <= LIST_ONLY_WITH_HEADER) {
                 addHeader();
             }
-            if (notes.size() > 1) {
+            if (notes.size() > LIST_ONLY_WITH_HEADER) {
                 notes.remove(removePosition);
             }
             if (data != null) {
                 notes.add(1, data.getParcelableExtra(EXTRA_PARAMS));
                 adapter.setNewList(notes);
+                //writeNotesInData(notes);
             }
         }
     }
@@ -168,19 +168,19 @@ public class MainFragment extends Fragment {
             if (notes == null) {
                 notes = new ArrayList<>();
                 addHeader();
-//                readNotesFromData();
-                    for (int i = 0; i < cities.length; i++) {
-                        String title = cities[i];
-                        Note note = new Note(title, "Описание", R.color.white);
-                        if (i % 2 == 0) {
-                            note.setType(MainFragmentAdapter.NOTE_TYPE);
-                        } else {
-                            note.setType(MainFragmentAdapter.REMINDER_TYPE);
-                            note.setDate("March " + i);
-                        }
-                        notes.add(note);
+                //readNotesFromData();
+                for (int i = 0; i < cities.length; i++) {
+                    String title = cities[i];
+                    Note note = new Note(title, 0, title, "Описание", "", R.color.white);
+                    if (i % 2 == 0) {
+                        note.setType(MainFragmentAdapter.NOTE_TYPE);
+                    } else {
+                        note.setType(MainFragmentAdapter.REMINDER_TYPE);
+                        note.setDate("March " + i);
                     }
-                    // тут записываем даные в дб
+                    notes.add(note);
+                }
+                // тут записываем даные в дб
                 //writeNotesInData(notes);
             }
         }
@@ -189,9 +189,9 @@ public class MainFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
-    private void writeNotesInData(List<Note> notes) {
+    /*private void writeNotesInData(List<Note> notes) {
         reference.push().setValue(notes);
-    }
+    }*/
 
     //TODO реализовать метод чтения данных из бд
     private void readNotesFromData() {
@@ -211,7 +211,7 @@ public class MainFragment extends Fragment {
     }
 
     private void addHeader() {
-        notes.add(0, new Note(HEADER_TYPE));
+        notes.add(0, new Note("1", HEADER_TYPE, "", "", "", 1));
     }
 
     @Override
@@ -223,5 +223,9 @@ public class MainFragment extends Fragment {
 
     interface onClickItem {
         void onClick(Note notes, int position);
+    }
+
+    public interface CardsSourceResponse {
+        void initialized(CardsSource cardsData);
     }
 }

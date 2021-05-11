@@ -7,7 +7,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -86,7 +85,7 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     Note generateItem() {
-        return new Note(NOTE_TYPE);
+        return new Note("New Note", NOTE_TYPE, "New Note", "Desc", "asdf", 1);
     }
 
     ///Region Holder
@@ -125,7 +124,7 @@ public class MainFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (color == 0) {
                 color = R.color.white;
             }
-            cardView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), color));
+            //cardView.setBackgroundColor(ContextCompat.getColor(textView.getContext(), color));
 
         }
 

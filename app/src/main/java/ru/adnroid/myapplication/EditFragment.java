@@ -112,7 +112,7 @@ public class EditFragment extends Fragment {
         } else if (getArguments() != null) {
             noteParams = getArguments().getParcelable(NOTE_BUNDLE_EXTRA);
         } else {
-            noteParams = new Note("", "", 0);
+            noteParams = new Note("1", 0, "", "", "", 1);
         }
     }
 
@@ -133,7 +133,7 @@ public class EditFragment extends Fragment {
     }
 
     private void saveNote(String title, String description, FragmentActivity fragmentActivity) {
-        Note params = new Note(title, description, color);
+        Note params = new Note(title, 1, title, description, "", color);
         Intent result = new Intent();
         result.putExtra(EXTRA_PARAMS, params);
 

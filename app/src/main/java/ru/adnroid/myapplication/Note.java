@@ -12,39 +12,26 @@ import java.util.Map;
 @IgnoreExtraProperties
 public class Note implements Parcelable {
 
+    private String id;
     private int type;
-    private String date;
     private String title;
     private String description;
+    private String date;
     private int colour;
 
-    // Создания  ранее сериализованных данных исходно объекта
-    public static final Creator<Note> CREATOR = new Creator<Note>() {
-        @Override
-        public Note createFromParcel(Parcel source) {
-            String title = source.readString();
-            String description = source.readString();
-            int colour = source.readInt();
-            return new Note(title, description, colour);
-        }
+    // Описывает контент и возвращает некторое числовое значение
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-        @Override
-        public Note[] newArray(int size) {
-            return new Note[size];
-        }
-    };
-
-    public Note(String title, String description, int colour) {
+    public Note(String id, int type, String title, String description, String date, int colour) {
+        this.id = id;
+        this.type = type;
         this.title = title;
         this.description = description;
+        this.date = date;
         this.colour = colour;
-    }
-
-    public Note(int type) {
-        this.type = type;
-    }
-
-    public Note() {
     }
 
     public String getTitle() {
@@ -87,18 +74,12 @@ public class Note implements Parcelable {
         this.colour = colour;
     }
 
-    // Описывает контент и возвращает некторое числовое значение
-    @Override
-    public int describeContents() {
-        return 0;
+    public String getId() {
+        return id;
     }
 
-    //  Пишет в объект Parcel содержимое объекта
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeString(description);
-        dest.writeInt(colour);
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Exclude
@@ -112,4 +93,33 @@ public class Note implements Parcelable {
         return result;
     }
 
+    //  Пишет в объект Parcel содержимое объекта
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeInt(type);
+        dest.writeString(title);
+        dest.writeString(description);
+        dest.writeString(date);
+        dest.writeInt(colour);
+    }
+
+    // Создания  ранее сериализованных данных исходно объекта
+    public static final Creator<Note> CREATOR = new Creator<Note>() {
+        @Override
+        public Note createFromParcel(Parcel source) {
+            String id = source.readString();
+            int type = source.readInt();
+            String title = source.readString();
+            String description = source.readString();
+            String date = source.readString();
+            int colour = source.readInt();
+            return new Note(id, type, title, description, date, colour);
+        }
+
+        @Override
+        public Note[] newArray(int size) {
+            return new Note[size];
+        }
+    };
 }
