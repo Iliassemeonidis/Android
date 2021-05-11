@@ -41,8 +41,6 @@ public class SettingsFragment extends Fragment {
         theme.setChecked(isBlackTheme());
         theme.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
-                // решение взято из официального источника, раздел "Change themes in-app")))
-                //https://developer.android.com/guide/topics/ui/look-and-feel/darktheme#:~:text=Dark%20theme%20applies%20to%20both,Theme)
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);

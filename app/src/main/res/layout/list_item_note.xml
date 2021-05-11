@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
+        <CheckBox
             android:id="@+id/icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,9 +35,9 @@
             android:padding="@dimen/list_item_text_padding"
             android:textColor="@color/black"
             android:textSize="@dimen/list_item_text_size"
-            app:layout_constraintBottom_toBottomOf="@+id/add_item"
-            app:layout_constraintEnd_toStartOf="@+id/add_item"
-            app:layout_constraintTop_toTopOf="@+id/add_item"
+            app:layout_constraintBottom_toBottomOf="@+id/remove_item"
+            app:layout_constraintEnd_toStartOf="@+id/remove_item"
+            app:layout_constraintTop_toTopOf="@+id/remove_item"
             tools:text="Заметка Екатеренбург" />
 
         <TextView
@@ -47,18 +47,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/list_item_text_view" />
-
-        <ImageView
-            android:id="@+id/add_item"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="15dp"
-            app:layout_constraintBottom_toBottomOf="@+id/remove_item"
-            app:layout_constraintEnd_toStartOf="@+id/remove_item"
-            app:layout_constraintTop_toTopOf="@+id/remove_item"
-            app:srcCompat="@drawable/ic_plus"
-            android:contentDescription="@string/add_new_note" />
 
         <ImageView
             android:id="@+id/remove_item"

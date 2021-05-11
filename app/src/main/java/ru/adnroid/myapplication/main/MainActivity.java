@@ -35,21 +35,13 @@ public class MainActivity extends AppCompatActivity {
     private static final String SHOPPING_FRAGMENT_TAG = "SHOPPING_FRAGMENT_TAG";
     private static final String EDIT_FRAGMENT_TAG = "EDIT_FRAGMENT_TAG";
     private MenuItem menuItemSearch;
-    private MenuItem menuItemAdd;
-    private MenuItem menuItemClear;
-    private static BottomNavigationView bottomNavigationView;
 
 
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Измененение у меня происходит в SettingsFragment, не в MainActivity.
-        // Не понимаю зачем устанавливать тему тут?
-        // setTheme(); - это решение предложил ты.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
-        initBottomNavigation();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -58,31 +50,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("NonConstantResourceId")
-    private void initBottomNavigation() {
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.my_shopping:
-                    addNewFragment(new ShoppingFragment(), SHOPPING_FRAGMENT_TAG);
-                    setVisibilityOnItemMenu(false);
-                    break;
-                case R.id.settings:
-                    addNewFragment(new SettingsFragment(), SETTINGS_FRAGMENT_TAG);
-                    setVisibilityOnItemMenu(false);
-                    break;
-                case R.id.saved_notes:
-                    addNewFragment(new MainFragment(), MAIN_FRAGMENT_TAG);
-                    setVisibilityOnItemMenu(true);
-                    break;
-            }
-            return true;
-        });
-    }
-
     public void setVisibilityOnItemMenu(boolean b) {
         menuItemSearch.setVisible(b);
-        menuItemAdd.setVisible(b);
-        menuItemClear.setVisible(b);
     }
 
     @Override
@@ -98,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
             dialog.create().show();
         } else {
             super.onBackPressed();
-            setVisibilityInNavigation(true);
             setVisibilityInItemMenuIfMainFragmentIsVisible();
         }
     }
@@ -109,8 +77,6 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.main_options_menu, menu);
 
         menuItemSearch = menu.findItem(R.id.search);
-        menuItemAdd = menu.findItem(R.id.add_item);
-        menuItemClear = menu.findItem(R.id.clear);
 
         SearchView searchView = (SearchView) menuItemSearch.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -127,14 +93,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         return true;
-    }
-
-    public static void setVisibilityInNavigation(boolean isVisible) {
-        if (isVisible) {
-            bottomNavigationView.setVisibility(View.VISIBLE);
-        } else {
-            bottomNavigationView.setVisibility(View.INVISIBLE);
-        }
     }
 
     private void removeFragment(FragmentTransaction transaction, Fragment fragment) {

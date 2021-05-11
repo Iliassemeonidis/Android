@@ -53,7 +53,6 @@ public class EditFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        MainActivity.setVisibilityInNavigation(false);
         initView(view, savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -66,8 +65,6 @@ public class EditFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
-        menu.findItem(R.id.add_item).setVisible(false);
-        menu.findItem(R.id.clear).setVisible(false);
         menu.findItem(R.id.search).setVisible(false);
     }
 
@@ -127,7 +124,6 @@ public class EditFragment extends Fragment {
             FragmentActivity fragmentActivity = getActivity();
             if (fragmentActivity != null) {
                 saveNote(title, description, fragmentActivity);
-                MainActivity.setVisibilityInNavigation(true);
             }
         }
     }
