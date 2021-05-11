@@ -45,6 +45,7 @@ public class MainFragment extends Fragment {
     public static final String EXTRA_PARAMS = "EXTRA_PARAMS";
     public static final String APP_NOTE_KEY = "NOTE_KEY";
     public static final String APP_SAVED_NOTE = "APP_SAVED_NOTE";
+    public static final String DEFALT_VALUE = "DEFALT_VALUE";
     private static Bundle bundle;
     private MainFragmentAdapter adapter;
     private ArrayList<Note> notes;
@@ -152,6 +153,7 @@ public class MainFragment extends Fragment {
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences(APP_NOTE_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(APP_SAVED_NOTE, jsonNotes);
+        editor.apply();
     }
 
     private String getConvertedArrayInStringToJSON() {
@@ -166,8 +168,8 @@ public class MainFragment extends Fragment {
 
     private void createList(@NonNull View view, @Nullable Bundle savedInstanceState) {
         SharedPreferences getNotesFromPref = requireContext().getSharedPreferences(APP_NOTE_KEY, Context.MODE_PRIVATE);
-        String appNotes = getNotesFromPref.getString(APP_SAVED_NOTE, "Шиш");
-        if (!appNotes.equals("Шиш")) {
+        String appNotes = getNotesFromPref.getString(APP_SAVED_NOTE, DEFALT_VALUE);
+        if (!appNotes.equals(DEFALT_VALUE)) {
             getTranslationFromJSON(appNotes);
         } else {
             String[] cities = getResources().getStringArray(R.array.cities);
