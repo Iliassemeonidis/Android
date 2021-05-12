@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -16,26 +15,16 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.List;
 import java.util.Objects;
 
 import ru.adnroid.myapplication.R;
-import ru.adnroid.myapplication.fragments.SettingsFragment;
-import ru.adnroid.myapplication.fragments.ShoppingFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final int REQUEST_CODE = 42;
-    public static final String EXTRA_KEY = "EXTRA_KEY";
     private static final String MAIN_FRAGMENT_TAG = "MAIN_FRAGMENT_TAG";
     private static final String SETTINGS_FRAGMENT_TAG = "SETTINGS_FRAGMENT_TAG";
-    private static final String SHOPPING_FRAGMENT_TAG = "SHOPPING_FRAGMENT_TAG";
-    private static final String EDIT_FRAGMENT_TAG = "EDIT_FRAGMENT_TAG";
     private MenuItem menuItemSearch;
-
 
     @SuppressLint("NonConstantResourceId")
     @Override
@@ -95,17 +84,12 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void removeFragment(FragmentTransaction transaction, Fragment fragment) {
-        if (fragment != null) {
-            transaction.remove(fragment);
-        }
-    }
-
     // TODO разобраться с бодавление фрагментов
     private void addNewFragment(Fragment fragment, String tag) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         List<Fragment> fragments = fragmentManager.getFragments();
+
         if (fragmentManager.findFragmentByTag(tag) != null) {
             for (int i = 0; i < fragments.size(); i++) {
                 String tagToEq = fragments.get(i).getTag();

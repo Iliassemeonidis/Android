@@ -20,8 +20,6 @@ import androidx.fragment.app.FragmentActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import ru.adnroid.myapplication.main.MainActivity;
-
 import static ru.adnroid.myapplication.main.MainFragment.EXTRA_PARAMS;
 
 public class EditFragment extends Fragment {
