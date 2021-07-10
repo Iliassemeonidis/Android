@@ -25,11 +25,11 @@ import ru.adnroid.myapplication.utils.ViewUtils;
 
 public class DetailsFragment extends Fragment {
 
-    public static final int REQUEST_CODE = 42;
     public static final String EXTRA_PARAMS = "EXTRA_PARAMS";
     private static final String BUNDLE_EXTRA = "BUNDLE_EXTRA";
     public static final String EDIT_FRAGMENT_TAG = "EDIT_FRAGMENT_TAG";
     public static final String NOTE_KEY = "NOTE_KEY";
+    public static final int REQUEST_CODE =15 ;
     private TextView textViewTitle;
     private TextView textViewDescription;
     private Note note;
@@ -101,7 +101,7 @@ public class DetailsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if ( resultCode == Activity.RESULT_OK) {
             checkData(data);
         }
     }

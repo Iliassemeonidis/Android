@@ -19,10 +19,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import static ru.adnroid.myapplication.DetailsFragment.EXTRA_PARAMS;
-import static ru.adnroid.myapplication.DetailsFragment.REQUEST_CODE;
 
 public class EditFragment extends Fragment {
 
+    public static final int REQUEST_CODE_ADD = 42;
     private static final String NOTE_BUNDLE_EXTRA = "NOTE_BUNDLE_EXTRA";
     public static final String NOTE_KEY = "NOTE_KEY";
     private int color;
@@ -114,7 +114,7 @@ public class EditFragment extends Fragment {
 
                 Fragment targetFragment = getTargetFragment();
                 if (targetFragment != null) {
-                    targetFragment.onActivityResult(REQUEST_CODE, Activity.RESULT_OK, result);
+                    targetFragment.onActivityResult(REQUEST_CODE_ADD, Activity.RESULT_OK, result);
                     fragmentActivity.getSupportFragmentManager().popBackStack();
                 }
             }

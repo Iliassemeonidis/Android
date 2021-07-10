@@ -35,4 +35,30 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/margin"
         app:srcCompat="@drawable/ic_close" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id= "@+id/moveItemUp"
+        android:layout_width= "wrap_content"
+        android:layout_height= "wrap_content"
+        android:layout_weight="1"
+        android:layout_margin= "10dp"
+        android:tint= "@color/design_default_color_error"
+        app:layout_constraintBottom_toBottomOf= "@+id/marsTextView"
+        app:layout_constraintEnd_toStartOf= "@+id/addItemImageView"
+        app:layout_constraintStart_toEndOf= "@+id/marsTextView"
+        app:layout_constraintTop_toTopOf= "@+id/marsTextView"
+        app:srcCompat= "@android:drawable/arrow_up_float" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id= "@+id/moveItemDown"
+        android:layout_width= "wrap_content"
+        android:layout_height= "wrap_content"
+        android:layout_weight="1"
+        android:layout_margin= "10dp"
+        android:tint= "@color/design_default_color_error"
+        app:layout_constraintBottom_toBottomOf= "@+id/marsTextView"
+        app:layout_constraintEnd_toStartOf= "@+id/addItemImageView"
+        app:layout_constraintStart_toEndOf= "@+id/moveItemUp"
+        app:layout_constraintTop_toTopOf= "@+id/marsTextView"
+        app:srcCompat= "@android:drawable/arrow_down_float" />
 </LinearLayout>

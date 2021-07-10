@@ -8,14 +8,4 @@
         android:title="@string/search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always" />
-    <item
-        android:id="@+id/add_item"
-        android:icon="@android:drawable/ic_input_add"
-        android:title="@string/add"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/clear"
-        android:icon="@android:drawable/ic_delete"
-        android:title="@string/clear"
-        app:showAsAction="ifRoom" />
 </menu>

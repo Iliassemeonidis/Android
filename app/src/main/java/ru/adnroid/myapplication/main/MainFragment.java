@@ -1,5 +1,6 @@
 package ru.adnroid.myapplication.main;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +19,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -28,28 +31,31 @@ import ru.adnroid.myapplication.utils.ViewUtils;
 
 import static ru.adnroid.myapplication.DetailsFragment.EDIT_FRAGMENT_TAG;
 import static ru.adnroid.myapplication.DetailsFragment.EXTRA_PARAMS;
-import static ru.adnroid.myapplication.DetailsFragment.REQUEST_CODE;
 import static ru.adnroid.myapplication.main.MainFragmentAdapter.HEADER_TYPE;
 
 public class MainFragment extends Fragment {
 
     public static final String BUNDLE = "BUNDLE";
     public static final String LIST = "LIST";
+    private static final int REQUEST_CODE_EDIT = 42;
+    private static final int REQUEST_CODE_CREATE = 41;
     private static Bundle bundle;
     private MainFragmentAdapter adapter;
     private ArrayList<Note> notes;
+    private int removePosition;
 
     private final onClickItem onClickItem = new onClickItem() {
         @Override
-        public void onClick(Note notes) {
+        public void onClick(Note note, int position) {
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-            EditFragment editFragment = EditFragment.newInstance(notes);
-            editFragment.setTargetFragment(new MainFragment(), REQUEST_CODE);
+            EditFragment editFragment = EditFragment.newInstance(note);
+            editFragment.setTargetFragment(MainFragment.this, REQUEST_CODE_EDIT);
+            removePosition = position;
             if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
-                transaction.replace(R.id.details_container, EditFragment.newInstance(notes), EDIT_FRAGMENT_TAG);
+                transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
             } else {
-                transaction.add(R.id.list_container, EditFragment.newInstance(notes), EDIT_FRAGMENT_TAG);
+                transaction.add(R.id.list_container, editFragment, EDIT_FRAGMENT_TAG);
                 transaction.addToBackStack(null);
             }
             transaction.commitAllowingStateLoss();
@@ -60,7 +66,7 @@ public class MainFragment extends Fragment {
     }
 
     interface onClickItem {
-        void onClick(Note notes);
+        void onClick(Note notes, int position);
     }
 
     public static MainFragment newInstance(ArrayList<Note> notes) {
@@ -82,25 +88,58 @@ public class MainFragment extends Fragment {
         bundle = new Bundle();
         createList(view, savedInstanceState);
         setHasOptionsMenu(true);
+//        initBottomNavigationView(view);
         FloatingActionButton actionButton = view.findViewById(R.id.floating_action_button);
         actionButton.setOnClickListener(v -> {
+            if (notes.isEmpty()) {
+                addHeader();
+            }
             adapter.appendItem();
         });
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        final int add_item = R.id.add_item;
-        final int clear = R.id.clear;
-
-        switch (item.getItemId()) {
-            case add_item:
+    private void initBottomNavigationView(@NonNull View view) {
+        BottomNavigationView bottomNavigationView = view.findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            //FIXME write realisations
+            if (item.getTitle().equals("add")) {
                 FragmentActivity context = getActivity();
                 if (context != null) {
                     FragmentManager fragmentManager = context.getSupportFragmentManager();
                     FragmentTransaction transaction = fragmentManager.beginTransaction();
                     EditFragment editFragment = EditFragment.newInstance(new Note());
-                    editFragment.setTargetFragment(this, REQUEST_CODE);
+                    editFragment.setTargetFragment(this, REQUEST_CODE_EDIT);
+                    if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
+                        transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
+                    } else {
+                        transaction.replace(R.id.list_container, editFragment, EDIT_FRAGMENT_TAG);
+                    }
+                    transaction.addToBackStack(null);
+                    transaction.commitAllowingStateLoss();
+                }
+            } else if (item.getTitle().equals("clear")) {
+                notes.clear();
+                adapter.setNewList(notes);
+                return true;
+            }
+            return true;
+        });
+        bottomNavigationView.setOnNavigationItemReselectedListener(item -> {
+//            Toast.makeText(MainActivity.this, "Reselected", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_item:
+                FragmentActivity context = getActivity();
+                if (context != null) {
+                    FragmentManager fragmentManager = context.getSupportFragmentManager();
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                    EditFragment editFragment = EditFragment.newInstance(new Note());
+                    editFragment.setTargetFragment(this, REQUEST_CODE_EDIT);
                     if (ViewUtils.getOrientation(getResources().getConfiguration()) == Configuration.ORIENTATION_LANDSCAPE) {
                         transaction.replace(R.id.details_container, editFragment, EDIT_FRAGMENT_TAG);
                     } else {
@@ -110,7 +149,7 @@ public class MainFragment extends Fragment {
                     transaction.commitAllowingStateLoss();
                 }
                 return true;
-            case clear:
+            case R.id.clear:
                 notes.clear();
                 adapter.setNewList(notes);
                 return true;
@@ -122,13 +161,16 @@ public class MainFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            if (notes.isEmpty()){ addHeader();}
-
+        if (resultCode == Activity.RESULT_OK) {
+            if (notes.isEmpty()) {
+                addHeader();
+            }
             if (data != null) {
-                notes.add(data.getParcelableExtra(EXTRA_PARAMS));
+                notes.remove(removePosition);
+                notes.add(1, data.getParcelableExtra(EXTRA_PARAMS));
                 adapter.setNewList(notes);
             }
+
         }
     }
 
